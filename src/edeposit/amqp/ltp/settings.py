@@ -28,8 +28,13 @@ import os.path
 
 
 # Module configuration ========================================================
+#: Path to the directory for LTP export
+EXPORT_DIR = "TODO"
 
-#TODO: here will be configuration
+#: Filename of the MD5 file with checksum of the epublication
+MD5_FILENAME = "MD5.md5"
+
+
 
 # User configuration reader (don't edit this ==================================
 _ALLOWED = [str, int, float]
