@@ -11,7 +11,7 @@ function show_help {
     echo -e "\t-a"
     echo -e "\t\tRun all tests."
     echo -e "\t-i"
-    echo -e "\t\tRun integration test (requires sudo)."
+    echo -e "\t\tRun integration test."
     echo -e "\t-u"
     echo -e "\t\tRun unittest."
     echo
@@ -19,17 +19,17 @@ function show_help {
 }
 
 function run_all_tests {
-    sudo env PYTHONPATH=$PYTHONPATH py.test $TEST_PATH;
+    py.test $TEST_PATH;
     exit
 }
 
 function run_int_tests {
-    sudo env PYTHONPATH=$PYTHONPATH py.test "$TEST_PATH/integration";
+    py.test "$TEST_PATH/integration";
     exit
 }
 
 function run_unit_tests {
-    supy.test "$TEST_PATH/unittests";
+    py.test "$TEST_PATH/unittests";
     exit
 }
 
