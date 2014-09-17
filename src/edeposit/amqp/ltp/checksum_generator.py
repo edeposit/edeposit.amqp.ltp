@@ -55,7 +55,7 @@ def generate_checksums(directory, blacklist=_BLACKLIST):
                   filenames are checked, not paths!
 
     Returns:
-        list of tuples: List of tuples (md5_checksum, full_path).
+        dict: Dict in format ``{fn: md5_hash}``.
 
     Note:
         File paths are returned as absolute paths from package root.
@@ -66,9 +66,9 @@ def generate_checksums(directory, blacklist=_BLACKLIST):
     if not os.path.exists(directory):
         raise UserWarning("'%s' doesn't exists!" % directory)
 
-    hashes = []
+    hashes = {}
     for root, dirs, files in os.walk(directory):
-        for fn in files:
+        for fn in sorted(files):
             # skip files on blacklist
             if fn in blacklist:
                 continue
@@ -79,13 +79,9 @@ def generate_checksums(directory, blacklist=_BLACKLIST):
             with open(fn) as f:
                 checksum = hashlib.md5(f.read())
 
-            # append pair (hash, fixed_fn)
-            hashes.append(
-                (
-                    checksum.hexdigest(),
-                    _get_required_fn(fn, directory)
-                )
-            )
+            fn = _get_required_fn(fn, directory)
+
+            hashes[fn] = checksum.hexdigest()
 
     return hashes
 
@@ -104,8 +100,10 @@ def generate_hashfile(directory, blacklist=_BLACKLIST):
         str: Content of hashfile as it is specified in ABNF specification for \
              project.
     """
+    checksums = generate_checksums(directory, blacklist)
+
     out = ""
-    for checksum, fn in generate_checksums(directory, blacklist):
+    for fn, checksum in sorted(checksums.items()):
         out += "%s %s\n" % (checksum, fn)
 
     return out
