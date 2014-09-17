@@ -82,6 +82,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
+        "lxml"
     ],
     extras_require={
         "test": [
