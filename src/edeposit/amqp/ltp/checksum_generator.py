@@ -3,6 +3,9 @@
 #
 # Interpreter version: python 2.7
 #
+"""
+Checksum generator in format specified in LTP specification.
+"""
 # Imports =====================================================================
 import os
 import hashlib
@@ -16,12 +19,50 @@ _BLACKLIST = {
 
 # Functions & objects =========================================================
 def _get_required_fn(fn, root_path):
+    """
+    Definition of the MD5 file requires, that all paths will be absolute
+    for the package directory, not for the filesystem.
+
+    This function converts filesystem-absolute paths to package-absolute paths.
+
+    Args:
+        fn (str): Local/absolute path to the file.
+        root_path (str): Local/absolute path to the package directory.
+
+    Returns:
+        str: Package-absolute path to the file.
+
+    Raises:
+        ValueError: When `fn` is absolute and `root_path` relative or \
+                    conversely.
+    """
+    if not fn.startswith(root_path):
+        raise ValueError("Both paths have to be absolute or local!")
+
     replacer = "/" if root_path.endswith("/") else ""
 
     return fn.replace(root_path, replacer, 1)
 
 
 def generate_checksums(directory, blacklist=_BLACKLIST):
+    """
+    Compute checksum for each file in `directory`, with exception of files
+    specified in `blacklist`.
+
+    Args:
+        directory (str): Absolute or relative path to the directory.
+        blacklist (list/set/tuple): List of blacklisted filenames. Only
+                  filenames are checked, not paths!
+
+    Returns:
+        list of tuples: List of tuples (md5_checksum, full_path).
+
+    Note:
+        File paths are returned as absolute paths from package root.
+
+    Raises:
+        UserWarning: When `directory` doesn't exists.
+    """
     if not os.path.exists(directory):
         raise UserWarning("'%s' doesn't exists!" % directory)
 
@@ -36,12 +77,12 @@ def generate_checksums(directory, blacklist=_BLACKLIST):
 
             # compute hash of the file
             with open(fn) as f:
-                fn_hash = hashlib.md5(f.read())
+                checksum = hashlib.md5(f.read())
 
             # append pair (hash, fixed_fn)
             hashes.append(
                 (
-                    fn_hash.hexdigest(),
+                    checksum.hexdigest(),
                     _get_required_fn(fn, directory)
                 )
             )
@@ -49,4 +90,22 @@ def generate_checksums(directory, blacklist=_BLACKLIST):
     return hashes
 
 
-print generate_checksums("/home/bystrousak/.ssh")
+def generate_hashfile(directory, blacklist=_BLACKLIST):
+    """
+    Compute checksum for each file in `directory`, with exception of files
+    specified in `blacklist`.
+
+    Args:
+        directory (str): Absolute or relative path to the directory.
+        blacklist (list/set/tuple): List of blacklisted filenames. Only
+                  filenames are checked, not paths!
+
+    Returns:
+        str: Content of hashfile as it is specified in ABNF specification for \
+             project.
+    """
+    out = ""
+    for checksum, fn in generate_checksums(directory, blacklist):
+        out += "%s %s\n" % (checksum, fn)
+
+    return out
