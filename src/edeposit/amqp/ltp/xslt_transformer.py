@@ -10,12 +10,17 @@ import lxml.etree as ET
 
 
 import dhtmlparser
+from edeposit.amqp.aleph import marcxml
 
 
 # Variables ===================================================================
 
 
 # Functions & objects =========================================================
+def oai_to_xml(marc_oai):
+    pass
+
+
 def _add_namespace(marc_xml):
     dom = dhtmlparser.parseString(marc_xml)
 
@@ -25,7 +30,9 @@ def _add_namespace(marc_xml):
         col.params["xsi:schemaLocation"] = "http://www.loc.gov/MARC21/slim " + \
                   "http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
 
-    dom.find("root")[0].params = {}
+    root = dom.find("root")
+    if root:
+        root[0].params = {}
 
     return str(dom)
 
