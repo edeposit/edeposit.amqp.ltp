@@ -18,7 +18,9 @@ from edeposit.amqp.aleph import marcxml
 
 # Functions & objects =========================================================
 def oai_to_xml(marc_oai):
-    pass
+    record = marcxml.MARCXMLRecord(marc_oai)
+    record.oai_marc = False
+    return record.toXML()
 
 
 def _add_namespace(marc_xml):

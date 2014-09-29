@@ -84,7 +84,7 @@ setup(
         'setuptools',
         "lxml",
         "pydhtmlparser",
-        "edeposit.amqp.aleph"
+        "edeposit.amqp.aleph>=1.7.6"
     ],
     extras_require={
         "test": [
