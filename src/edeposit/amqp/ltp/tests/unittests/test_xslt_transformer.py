@@ -7,6 +7,8 @@
 import os
 import os.path
 
+import dhtmlparser
+
 from ltp import xslt_transformer
 
 
@@ -35,7 +37,44 @@ def test_oai_to_xml():
 
 
 def test_add_namespace():
-    pass
+    xml = "<root xex=1><record xex=1 /></root>"
+    fixed_xml = xslt_transformer._add_namespace(xml)
+
+    dom = dhtmlparser.parseString(fixed_xml)
+
+    root = dom.find("root")[0]
+    assert root.params == {}
+
+    record = dom.find("record")[0]
+    assert record.params == {}
+
+    collection = dom.find("collection")[0]
+    assert collection.params
+    assert "xmlns" in collection.params
+    assert "xmlns:xsi" in collection.params
+    assert "xsi:schemaLocation" in collection.params
+
+    assert dom.match("collection", "record")
+
+
+def test_add_namespace_collection_params():
+    xml = "<collection xmlns=1><record xex=1 /></collection>"
+    fixed_xml = xslt_transformer._add_namespace(xml)
+
+    dom = dhtmlparser.parseString(fixed_xml)
+
+    record = dom.find("record")[0]
+    assert record.params == {}
+
+    collection = dom.find("collection")[0]
+    assert collection.params
+    assert "xmlns" in collection.params
+    assert "http" in collection.params["xmlns"]
+    assert "xmlns:xsi" in collection.params
+    assert "xsi:schemaLocation" in collection.params
+
+    assert dom.match("collection", "record")
+
 
 def test_read_marcxml():
     pass
