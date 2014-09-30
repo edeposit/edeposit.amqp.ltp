@@ -59,9 +59,11 @@ def _add_namespace(marc_xml):
     if root:
         root[0].params = {}
 
+    for record in dom.find("record"):
+        record.params = {}
+
     if not collections:
         record = dom.find("record")[0]
-
         return XML_TEMPLATE.replace("$CONTENT", str(record))
 
     for col in collections:
@@ -74,8 +76,18 @@ def _add_namespace(marc_xml):
 
 
 def _read_marcxml(xml):
-    marc_xml = oai_to_xml(xml)
+    # read file, if `xml` is valid file path
+    marc_xml = xml
+    if "\n" not in xml.strip():
+        if not os.path.exists(xml):
+            raise UserWarning("XML file '%s' doesn't exists!" % xml)
+
+        with open(xml) as f:
+            marc_xml = f.read()
+
+    marc_xml = oai_to_xml(marc_xml)
     marc_xml = _add_namespace(marc_xml)
+
     file_obj = StringIO.StringIO(marc_xml)
 
     return ET.parse(file_obj)
@@ -83,14 +95,13 @@ def _read_marcxml(xml):
 
 def _read_template(template):
     template_xml = ""
-
-    if len(template) > 500:
-        template_xml = StringIO.StringIO(template)
-    else:
+    if "\n" not in template.strip():
         if not os.path.exists(template):
-            raise UserWarning("'%s' doesn't exists!" % template)
+            raise UserWarning("Template '%s' doesn't exists!" % template)
 
         template_xml = open(template)
+    else:
+        template_xml = StringIO.StringIO(template)
 
     return ET.parse(template_xml)
 
@@ -104,7 +115,3 @@ def transform(marc_xml, template):
     )
 
     return ET.tostring(newdom, pretty_print=True)
-
-
-
-print transform(open("/home/bystrousak/Plocha/LTP/aleph_example.xml").read(), "xslt/MARC21slim2MODS3-4-NDK.xsl")
