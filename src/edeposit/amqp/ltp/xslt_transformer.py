@@ -3,6 +3,9 @@
 #
 # Interpreter version: python 2.7
 #
+"""
+This module is used to apply XSLT template to MARC XML.
+"""
 # Imports =====================================================================
 import os.path
 import StringIO
@@ -76,6 +79,17 @@ def _add_namespace(marc_xml):
 
 
 def _read_marcxml(xml):
+    """
+    Read MARC XML or OAI file, convert, add namespace and return XML in
+    required format with all necessities.
+
+    Args:
+        xml (str): Filename or XML string. Don't use ``\\n`` in case of
+                   filename.
+
+    Returns:
+        obj: Required XML parsed with ``lxml.etree``.
+    """
     # read file, if `xml` is valid file path
     marc_xml = xml
     if "\n" not in xml.strip():
@@ -85,6 +99,8 @@ def _read_marcxml(xml):
         with open(xml) as f:
             marc_xml = f.read()
 
+    # process input file - convert it from possible OAI to MARC XML and add
+    # required XML namespaces
     marc_xml = oai_to_xml(marc_xml)
     marc_xml = _add_namespace(marc_xml)
 
@@ -94,24 +110,46 @@ def _read_marcxml(xml):
 
 
 def _read_template(template):
+    """
+    Read XSLT template.
+
+    Args:
+        template (str): Filename or XML string. Don't use ``\\n`` in case of
+                        filename.
+
+    Returns:
+        obj: Required XML parsed with ``lxml.etree``.
+    """
     template_xml = ""
-    if "\n" not in template.strip():
+    if "\n" in template.strip():
+        template_xml = StringIO.StringIO(template)
+    else:
         if not os.path.exists(template):
             raise UserWarning("Template '%s' doesn't exists!" % template)
 
         template_xml = open(template)
-    else:
-        template_xml = StringIO.StringIO(template)
 
     return ET.parse(template_xml)
 
 
-def transform(marc_xml, template):
+def transform(xml, template):
+    """
+    Transform `xml` using XSLT `template`.
+
+    Args:
+        xml (str): Filename or XML string. Don't use ``\\n`` in case of
+                   filename.
+        template (str): Filename or XML string. Don't use ``\\n`` in case of
+                        filename.
+
+    Returns:
+        str: Transformed `xml` as string.
+    """
     transformer = ET.XSLT(
         _read_template(template)
     )
     newdom = transformer(
-        _read_marcxml(marc_xml)
+        _read_marcxml(xml)
     )
 
     return ET.tostring(newdom, pretty_print=True)
