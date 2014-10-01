@@ -153,3 +153,20 @@ def transform(xml, template):
     )
 
     return ET.tostring(newdom, pretty_print=True)
+
+
+def transform_to_mods(marc_xml):
+    """
+    Convert `marc_xml` to MODS data format.
+
+    Args:
+        marc_xml (str): Filename or XML string. Don't use ``\\n`` in case of
+                        filename.
+
+    Returns:
+        str: Transformed xml as string.
+    """
+    dirname = os.path.dirname(__file__)
+    mods_template = os.path.join(dirname, "xslt/MARC21slim2MODS3-4-NDK.xsl")
+
+    return transform(marc_xml, mods_template)
