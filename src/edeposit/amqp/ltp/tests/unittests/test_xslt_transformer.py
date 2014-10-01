@@ -6,6 +6,7 @@
 # Imports =====================================================================
 import os
 import os.path
+import lxml.etree as ET
 
 import dhtmlparser
 
@@ -77,10 +78,39 @@ def test_add_namespace_collection_params():
 
 
 def test_read_marcxml():
-    pass
+    with open(OAI_FILENAME) as f:
+        oai_xml = f.read()
+
+    marc_xml = xslt_transformer._read_marcxml(oai_xml)
+
+    assert isinstance(marc_xml, ET._ElementTree)
+
+    marc_xml = ET.tostring(marc_xml)
+
+    assert marc_xml
+    assert "<record" in marc_xml
+    assert "<datafield" in marc_xml
+    assert "<subfield" in marc_xml
+
+
+def test_read_marcxml_fn():
+    marc_xml = xslt_transformer._read_marcxml(OAI_FILENAME)
+
+    assert isinstance(marc_xml, ET._ElementTree)
+
+    marc_xml = ET.tostring(marc_xml)
+
+    assert marc_xml
+    assert "<record" in marc_xml
+    assert "<datafield" in marc_xml
+    assert "<subfield" in marc_xml
+
 
 def test_read_template():
     pass
 
 def test_transform():
+    pass
+
+def test_transform_to_mods():
     pass
