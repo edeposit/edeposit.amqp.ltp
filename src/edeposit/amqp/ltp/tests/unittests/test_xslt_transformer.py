@@ -18,6 +18,7 @@ DIRNAME = os.path.dirname(__file__) + "/data/"
 OAI_FILENAME = DIRNAME + "oai_example.oai"
 CONVERTED_MARC_FN = DIRNAME + "converted_oai.xml"
 XSLT_FILENAME = DIRNAME + "MARC21slim2MODS3-4-NDK.xsl"
+TRANSFORMED_FN = DIRNAME + "transformed_mods.xml"
 
 
 # Functions & objects =========================================================
@@ -137,7 +138,14 @@ def test_read_template_fn():
 
 
 def test_transform():
-    pass
+    result = xslt_transformer.transform(OAI_FILENAME, XSLT_FILENAME)
+
+    with open(TRANSFORMED_FN) as f:
+        assert result == f.read()
+
 
 def test_transform_to_mods():
-    pass
+    result = xslt_transformer.transform_to_mods(OAI_FILENAME)
+
+    with open(TRANSFORMED_FN) as f:
+        assert result == f.read()
