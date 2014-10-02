@@ -17,6 +17,7 @@ from ltp import xslt_transformer
 DIRNAME = os.path.dirname(__file__) + "/data/"
 OAI_FILENAME = DIRNAME + "oai_example.oai"
 CONVERTED_MARC_FN = DIRNAME + "converted_oai.xml"
+XSLT_FILENAME = DIRNAME + "MARC21slim2MODS3-4-NDK.xsl"
 
 
 # Functions & objects =========================================================
@@ -107,7 +108,33 @@ def test_read_marcxml_fn():
 
 
 def test_read_template():
-    pass
+    with open(XSLT_FILENAME) as f:
+        xslt_xml = f.read()
+
+    xslt = xslt_transformer._read_template(xslt_xml)
+
+    assert isinstance(xslt, ET._ElementTree)
+
+    xslt_str = ET.tostring(xslt)
+
+    assert xslt_str
+    assert "<xsl:stylesheet" in xslt_str
+    assert "<xsl:output" in xslt_str
+    assert "</xsl:stylesheet>" in xslt_str
+
+
+def test_read_template_fn():
+    xslt = xslt_transformer._read_template(XSLT_FILENAME)
+
+    assert isinstance(xslt, ET._ElementTree)
+
+    xslt_str = ET.tostring(xslt)
+
+    assert xslt_str
+    assert "<xsl:stylesheet" in xslt_str
+    assert "<xsl:output" in xslt_str
+    assert "</xsl:stylesheet>" in xslt_str
+
 
 def test_transform():
     pass
