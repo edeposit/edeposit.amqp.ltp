@@ -11,6 +11,7 @@ import base64
 import os.path
 
 from dhtmlparser import HTMLElement
+import xmltodict
 
 import settings
 import structures
@@ -61,17 +62,62 @@ def _create_package_hierarchy():
     return root_dir, original_dir, metadata_dir
 
 
-def _compose_info(root_dir, original_fn, metadata_fn):
+def _get_localized_fn(fn, root_dir):
+    local_fn = fn.replace(root_dir, "")
+
+    if not local_fn.startswith("/"):
+        return "/" + local_fn
+
+    return local_fn
+
+
+def _compose_info(package_id, root_dir, original_fn, metadata_fn):
+    document = {
+        "info": {
+            "created": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()),
+            "metadataversion": "1.0",
+            "packageid": package_id,
+            "mainmets": _get_localized_fn(metadata_fn, root_dir),
+            "itemlist": {
+                "@itemtotal": "1",
+                "item": _get_localized_fn(original_fn, root_dir)
+            }
+        }
+    }
+
+    # document["info"]["titleid"] = {
+    #     "@type": "isbn",
+    #     "#text": isbn
+    # }
+    # document["info"]["titleid"] = {
+    #     "@type": "issn",
+    #     "#text": issn
+    # }
+    # document["info"]["titleid"] = {
+    #     "@type": "ccnb",
+    #     "#text": ccnb
+    # }
+    # document["info"]["titleid"] = {
+    #     "@type": "urnnbn",
+    #     "#text": urnnbn
+    # }
+
+    return xmltodict.unparse(document, pretty=True)
+
+
     dom = HTMLElement(
         "info",
         [
             HTMLElement("created", [HTMLElement(
                 time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
-            )])
+            )]),
+            HTMLElement("metadataversion", [HTMLElement("1.0")])
         ]
     )
 
-    return str(dom)
+    return dom.prettify()
+
+print _compose_info("id", "root_dir", "root_dir/original_fn", "metadata_fn")
 
 
 def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):

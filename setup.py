@@ -85,6 +85,7 @@ setup(
         'setuptools',
         "lxml",
         "pydhtmlparser",
+        "xmltodict",
         "edeposit.amqp.aleph>=1.7.6"
     ],
     extras_require={
