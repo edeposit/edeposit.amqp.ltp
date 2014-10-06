@@ -80,6 +80,16 @@ def _path_to_id(path):
     return os.path.basename(path)
 
 
+def _calc_dir_size(path):
+    dir_size = 0
+    for (root, dirs, files) in os.walk(path):
+        for fn in files:
+            full_fn = os.path.join(root, fn)
+            dir_size += os.path.getsize(full_fn)
+
+    return dir_size
+
+
 def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
     # compute hash for hashfile
     with open(hash_fn) as f:
@@ -102,7 +112,8 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
                 "@checksum": hash_file_md5,
                 "#text": hash_fn
             },
-            "collection": "edeposit"
+            "collection": "edeposit",
+            "size": _calc_dir_size(root_dir) / 1024,  # size in kiB
         }
     }
 
@@ -113,16 +124,19 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
     if record.getPublisher(None):
         document["info"]["institution"] = record.getPublisher()
 
+    # get <creator> info
+    creator = record.getDataRecords("910", "a", False)
+    alt_creator = record.getDataRecords("040", "d", False)
+    document["info"]["creator"] = creator[0] if creator else alt_creator[-1]
+
     # collect informations for <titleid> tags
     isbns = record.getISBNs()
 
-    ccnb = marcxml._undefinedPattern(
-        "".join(record.getDataRecords("015", "a", False)),
-        lambda x: x.strip() == "",
-        None
-    )
+    ccnb = record.getDataRecords("015", "a", False)
+    ccnb = ccnb[0] if ccnb else None
 
     urnnbn = record.getDataRecords("856", "u", False)
+    urnnbn = urnnbn[0] if urnnbn else None
 
     if any([isbns, ccnb, urnnbn]):  # issn
         document["info"]["titleid"] = []
@@ -152,19 +166,6 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
     #     })
 
     return xmltodict.unparse(document, pretty=True)
-
-
-    dom = HTMLElement(
-        "info",
-        [
-            HTMLElement("created", [HTMLElement(
-                time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
-            )]),
-            HTMLElement("metadataversion", [HTMLElement("1.0")])
-        ]
-    )
-
-    return dom.prettify()
 
 print _compose_info(
     "/somewhere/root_dir",
