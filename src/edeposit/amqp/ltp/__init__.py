@@ -31,20 +31,53 @@ def _get_package_name():
     return os.path.join(settings.TEMP_DIR, "dokument/")  # TODO
 
 
-def _get_suffix(fn):
-    suffix = fn.split(".")[-1]
+def _get_suffix(path):
+    """
+    Return suffix from `path`.
+
+    ``/home/xex/somefile.txt`` --> ``txt``.
+
+    Args:
+        path (str): Full file path.
+
+    Returns:
+        str: Suffix.
+
+    Raises:
+        UserWarning: When / is detected in suffix.
+    """
+    suffix = os.path.basename(path).split(".")[-1]
 
     if "/" in suffix:
-        raise UserWarning("Filename can't contain '/' in suffix (%s)!" % fn)
+        raise UserWarning("Filename can't contain '/' in suffix (%s)!" % path)
 
     return suffix
 
 
 def _get_original_fn(book_id, ebook_fn):
+    """
+    Construct original filename from `book_id` and `ebook_fn`.
+
+    Args:
+        book_id (int/str): ID of the book, without special characters.
+        ebook_fn (str): Original name of the ebook. Used to get suffix.
+
+    Returns:
+        str: Filename in format ``oc_nk-edep-BOOKID.suffix``.
+    """
     return "oc_nk-edep-" + str(book_id) + "." + _get_suffix(ebook_fn)
 
 
 def _get_metadata_fn(book_id):
+    """
+    Construct filename for metadata file.
+
+    Args:
+        book_id (int/str): ID of the book, without special characters.
+
+    Returns:
+        str: Filename in format ``"meds_nk-edep-BOOKID.xml``.
+    """
     return "meds_nk-edep-" + str(book_id) + ".xml"
 
 
