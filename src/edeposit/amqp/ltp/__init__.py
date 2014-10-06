@@ -10,9 +10,10 @@ import shutil
 import base64
 import os.path
 import hashlib
+from collections import OrderedDict
 
-from dhtmlparser import HTMLElement
 import xmltodict
+from dhtmlparser import HTMLElement
 from edeposit.amqp.aleph import marcxml
 
 import settings
@@ -90,6 +91,51 @@ def _calc_dir_size(path):
     return dir_size
 
 
+def _remove_hairs(inp):
+    special_chars = "/:;,- []<>()"
+
+    while inp and inp[-1] in special_chars:
+        inp = inp[:-1]
+
+    while inp and inp[1:] in special_chars:
+        inp = inp[1:]
+
+    return inp
+
+
+def _add_order(inp_dict):
+    out = OrderedDict()
+
+    priority_table = [
+        "created",
+        "metadataversion",
+        "packageid",
+        "mainmets",
+        "titleid",
+        "collection",
+        "institution",
+        "creator",
+        "size",
+        "itemlist",
+        "checksum"
+    ]
+    priority_table = dict(
+        map(
+            lambda (cnt, key): (key, cnt),
+            enumerate(priority_table)
+        )
+    )
+
+    sorted_keys = sorted(
+        inp_dict.keys(),
+        key=lambda x: priority_table.get(x, x)
+    )
+    for key in sorted_keys:
+        out[key] = inp_dict[key]
+
+    return out
+
+
 def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
     # compute hash for hashfile
     with open(hash_fn) as f:
@@ -122,7 +168,9 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
 
     # get publisher info
     if record.getPublisher(None):
-        document["info"]["institution"] = record.getPublisher()
+        document["info"]["institution"] = _remove_hairs(
+            record.getPublisher()
+        )
 
     # get <creator> info
     creator = record.getDataRecords("910", "a", False)
@@ -159,11 +207,14 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
             "#text": urnnbn
         })
 
+    # TODO: later
     # if issn:
     #     document["info"]["titleid"].append({
     #         "@type": "issn",
     #         "#text": issn
     #     })
+
+    document["info"] = _add_order(document["info"])
 
     return xmltodict.unparse(document, pretty=True)
 
