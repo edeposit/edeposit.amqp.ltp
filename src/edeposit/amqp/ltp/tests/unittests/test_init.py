@@ -92,3 +92,7 @@ def test_calc_dir_size():
 
     if os.path.exists(root_dir):
         shutil.rmtree(root_dir)
+
+
+def test_remove_hairs():
+    assert ltp._remove_hairs(",a-sd,-/") == "a-sd"
