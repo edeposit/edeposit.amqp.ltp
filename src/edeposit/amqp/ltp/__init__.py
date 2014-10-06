@@ -118,8 +118,23 @@ def _create_package_hierarchy(prefix=settings.TEMP_DIR):
     return root_dir, original_dir, metadata_dir
 
 
-def _get_localized_fn(fn, root_dir):
-    local_fn = fn.replace(root_dir, "")
+def _get_localized_fn(path, root_dir):
+    """
+    Return absolute `path` relative to `root_dir`.
+
+    When `path` == ``/home/xex/somefile.txt`` and `root_dir` == ``/home``,
+    returned path will be ``/xex/somefile.txt``.
+
+    Args:
+        path (str): Absolute path beginning in `root_dir`.
+        root_dir (str): Absolute path containing `path` argument.
+
+    Returns:
+        str: Local `path` when `root_dir` is considered as root of FS.
+    """
+    local_fn = path
+    if path.startswith(root_dir):
+        local_fn = path.replace(root_dir, "", 1)
 
     if not local_fn.startswith("/"):
         return "/" + local_fn
