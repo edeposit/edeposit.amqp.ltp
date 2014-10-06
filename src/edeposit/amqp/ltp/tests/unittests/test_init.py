@@ -72,3 +72,23 @@ def test_path_to_id():
     assert ltp._path_to_id("/xex/xax/") == "xax"
 
     assert os.path.basename("/xex/xax/") == ""
+
+
+def test_calc_dir_size():
+    root_dir, original_dir, metadata_dir = ltp._create_package_hierarchy("/tmp")
+
+    # create 3 files
+    with open(os.path.join(root_dir, "root_file.txt"), "w") as f:
+        f.write(1024 * "f")
+
+    with open(os.path.join(original_dir, "original_file.txt"), "w") as f:
+        f.write(1024 * "f")
+
+    with open(os.path.join(metadata_dir, "meta_file.txt"), "w") as f:
+        f.write(1024 * "f")
+
+    # compute size of the files
+    assert ltp._calc_dir_size(root_dir) >= 3*1024
+
+    if os.path.exists(root_dir):
+        shutil.rmtree(root_dir)
