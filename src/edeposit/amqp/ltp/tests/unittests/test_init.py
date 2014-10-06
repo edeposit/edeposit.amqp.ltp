@@ -96,3 +96,37 @@ def test_calc_dir_size():
 
 def test_remove_hairs():
     assert ltp._remove_hairs(",a-sd,-/") == "a-sd"
+
+
+def test_add_order():
+    unordered = {
+        "size": 1,
+        "created": 1,
+        "mainmets": 1,
+        "creator": 1,
+        "titleid": 1,
+        "itemlist": 1,
+        "collection": 1,
+        "checksum": 1,
+        "packageid": 1,
+        "institution": 1,
+        "metadataversion": 1,
+        "something_random": "yey"
+    }
+
+    ordered = ltp._add_order(unordered)
+
+    assert ordered.keys() == [
+        "created",
+        "metadataversion",
+        "packageid",
+        "mainmets",
+        "titleid",
+        "collection",
+        "institution",
+        "creator",
+        "size",
+        "itemlist",
+        "checksum",
+        "something_random"
+    ]
