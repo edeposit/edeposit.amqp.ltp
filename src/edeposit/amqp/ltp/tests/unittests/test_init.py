@@ -7,11 +7,14 @@
 import shutil
 import os.path
 
+import dhtmlparser
+
 import ltp
 
 
 # Variables ===================================================================
-
+DIRNAME = os.path.dirname(__file__) + "/data/"
+OAI_FILENAME = DIRNAME + "oai_example.oai"
 
 
 # Functions & objects =========================================================
@@ -130,3 +133,13 @@ def test_add_order():
         "checksum",
         "something_random"
     ]
+
+
+def test_compose_info():
+    info_file = ltp._compose_info(
+        "/home/root_dir",
+        "/home/root_dir/data/ebook.epub",
+        "/home/root_dir/meta/meta.xml",
+        "/home/root_dir/hashfile.md5",
+        open(OAI_FILENAME).read()
+    )
