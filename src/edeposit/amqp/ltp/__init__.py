@@ -204,6 +204,18 @@ def _remove_hairs(inp):
 
 
 def _add_order(inp_dict):
+    """
+    Add order to unordered dict.
+
+    Order is taken from *priority table*, which is just something I did to
+    make outputs from `xmltodict` look like examples in specification.
+
+    Args:
+        inp_dict (dict): Unordered dictionary.
+
+    Returns:
+        OrderedDict: Dictionary ordered by *priority table*.
+    """
     out = OrderedDict()
 
     priority_table = [
@@ -219,7 +231,7 @@ def _add_order(inp_dict):
         "itemlist",
         "checksum"
     ]
-    priority_table = dict(
+    priority_table = dict(  # construct dict keys -> {key: order}
         map(
             lambda (cnt, key): (key, cnt),
             enumerate(priority_table)
