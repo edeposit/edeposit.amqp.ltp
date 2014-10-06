@@ -162,6 +162,15 @@ def _path_to_id(path):
 
 
 def _calc_dir_size(path):
+    """
+    Calculate size of all files in `path`.
+
+    Args:
+        path (str): Path to the directory.
+
+    Returns:
+        int: Size of the directory in bytes.
+    """
     dir_size = 0
     for (root, dirs, files) in os.walk(path):
         for fn in files:
