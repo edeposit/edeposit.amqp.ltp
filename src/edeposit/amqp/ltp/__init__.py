@@ -13,7 +13,6 @@ import hashlib
 from collections import OrderedDict
 
 import xmltodict
-from dhtmlparser import HTMLElement
 from edeposit.amqp.aleph import marcxml
 
 import settings
