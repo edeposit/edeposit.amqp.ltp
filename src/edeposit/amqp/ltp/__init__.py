@@ -27,8 +27,8 @@ import checksum_generator
 
 
 # Functions & objects =========================================================
-def _get_package_name():
-    return os.path.join(settings.TEMP_DIR, "dokument/")  # TODO
+def _get_package_name(prefix=settings.TEMP_DIR):
+    return os.path.join(prefix, "dokument/")  # TODO
 
 
 def _get_suffix(path):
@@ -81,8 +81,28 @@ def _get_metadata_fn(book_id):
     return "meds_nk-edep-" + str(book_id) + ".xml"
 
 
-def _create_package_hierarchy():
-    root_dir = _get_package_name()
+def _create_package_hierarchy(prefix=settings.TEMP_DIR):
+    """
+    Create hierarchy of directories, at it is required in specification.
+
+    `root_dir` is root of the package generated using :attr:`settings.TEMP_DIR`
+    and :func:`_get_package_name`.
+
+    `original_dir` is path to the directory, where the data files are stored.
+
+    `metadata_dir` is path to the directory with MODS metadata.
+
+    Args:
+        prefix (str): Path to the directory where the `root_dir` will be
+                      stored.
+
+    Warning:
+        If the `root_dir` exists, it is REMOVED!
+
+    Returns:
+        list of str: root_dir, original_dir, metadata_dir
+    """
+    root_dir = _get_package_name(prefix)
 
     if os.path.exists(root_dir):
         shutil.rmtree(root_dir)
