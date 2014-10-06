@@ -143,6 +143,18 @@ def _get_localized_fn(path, root_dir):
 
 
 def _path_to_id(path):
+    """
+    Name of the root directory is used as ``<packageid>`` in ``info.xml``.
+
+    This function makes sure, that :func:`os.path.basename` doesn't return
+    blank string in case that there is `/` at the end of the `path`.
+
+    Args:
+        path (str): Path to the root directory.
+
+    Returns:
+        str: Basename of the `path`.
+    """
     if path.endswith("/"):
         path = path[:-1]
 
