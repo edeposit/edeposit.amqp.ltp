@@ -4,6 +4,9 @@
 # Interpreter version: python 2.7
 #
 # Imports =====================================================================
+import shutil
+import os.path
+
 import ltp
 
 
@@ -31,3 +34,17 @@ def test_get_original_fn():
 def test_get_metadata_fn():
     assert ltp._get_metadata_fn("111") == "meds_nk-edep-111.xml"
     assert ltp._get_metadata_fn(111) == "meds_nk-edep-111.xml"
+
+
+def test_create_package_hierarchy():
+    root_dir, original_dir, metadata_dir = ltp._create_package_hierarchy("/tmp")
+
+    assert root_dir.startswith("/tmp")
+
+    assert original_dir.startswith(root_dir)
+    assert metadata_dir.startswith(root_dir)
+
+    assert original_dir != metadata_dir
+
+    if os.path.exists(root_dir):
+        shutil.rmtree(root_dir)
