@@ -249,6 +249,40 @@ def _add_order(inp_dict):
 
 
 def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
+    """
+    Compose `info` XML file.
+
+    Info example::
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <info>
+            <created>2014-07-31T10:58:53</created>
+            <metadataversion>1.0</metadataversion>
+            <packageid>c88f5a50-7b34-11e2-b930-005056827e51</packageid>
+            <mainmets>mets.xml</mainmets>
+            <titleid type="ccnb">cnb001852189</titleid>
+            <titleid type="isbn">978-80-85979-89-6</titleid>
+            <collection>edeposit</collection>
+            <institution>nakladatelství Altar</institution>
+            <creator>ABA001</creator>
+            <size>1530226</size>
+            <itemlist itemtotal="1">
+                <item>\data\Denik_zajatce_Sramek_CZ_v30f-font.epub</item>
+            </itemlist>
+            <checksum type="MD5" checksum="ce076548eaade33888005de5d4634a0d">
+                \MD5.md5
+            </checksum>
+        </info>
+
+    Args:
+        root_dir (str): Absolute path to the root directory.
+        original_fn (str): Absolute path to the ebook file.
+        metadata_fn (str): Absolute path to the metadata file.
+        hash_fn (str): Absolute path to the MD5 file.
+        aleph_record (str): String with Aleph record with metadata.
+
+    Returns:
+        str: XML string.
+    """
     # compute hash for hashfile
     with open(hash_fn) as f:
         hash_file_md5 = hashlib.md5(f.read()).hexdigest()
@@ -268,7 +302,7 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
             "checksum": {
                 "@type": "MD5",
                 "@checksum": hash_file_md5,
-                "#text": hash_fn
+                "#text": _get_localized_fn(hash_fn, root_dir)
             },
             "collection": "edeposit",
             "size": _calc_dir_size(root_dir) / 1024,  # size in kiB
