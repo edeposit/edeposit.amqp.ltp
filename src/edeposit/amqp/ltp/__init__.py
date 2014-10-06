@@ -215,16 +215,9 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
     #     })
 
     document["info"] = _add_order(document["info"])
+    xml_document = xmltodict.unparse(document, pretty=True)
 
-    return xmltodict.unparse(document, pretty=True)
-
-print _compose_info(
-    "/somewhere/root_dir",
-    "/somewhere/root_dir/original_fn",
-    "/somewhere/root_dir/metadata_fn",
-    "/proc/cpuinfo",
-    open("/home/bystrousak/Plocha/prace/test/aleph/tests/resources/aleph_data_examples/aleph_sources/example4.xml").read()
-)
+    return xml_document.replace("<?xml ", '<?xml standalone="yes" ')
 
 
 def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
@@ -258,8 +251,16 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
         )
 
     # create info file
-    _compose_info(md5_fn)
-
+    with open(os.path.join(root_dir, settings.INFO_FILENAME), "w") as f:
+        f.write(
+            _compose_info(
+                root_dir,
+                original_fn,
+                metadata_fn,
+                md5_fn,
+                aleph_record,
+            )
+        )
 
 
 # Main program ================================================================
