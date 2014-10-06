@@ -48,3 +48,20 @@ def test_create_package_hierarchy():
 
     if os.path.exists(root_dir):
         shutil.rmtree(root_dir)
+
+
+def test_get_localized_fn():
+    local_path = ltp._get_localized_fn("/home/xex/somefile.txt", "/home")
+    assert local_path == "/xex/somefile.txt"
+
+    local_path = ltp._get_localized_fn("/somefile.txt", "/")
+    assert local_path == "/somefile.txt"
+
+    local_path = ltp._get_localized_fn("/xex/somefile.txt", "/home")
+    assert local_path == "/xex/somefile.txt"
+
+    local_path = ltp._get_localized_fn("/home/xex/home/somefile.txt", "/home")
+    assert local_path == "/xex/home/somefile.txt"
+
+    local_path = ltp._get_localized_fn("somefile.txt", "/azgabash")
+    assert local_path == "/somefile.txt"
