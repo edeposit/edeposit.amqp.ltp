@@ -65,3 +65,10 @@ def test_get_localized_fn():
 
     local_path = ltp._get_localized_fn("somefile.txt", "/azgabash")
     assert local_path == "/somefile.txt"
+
+
+def test_path_to_id():
+    assert ltp._path_to_id("/xex/xax") == "xax"
+    assert ltp._path_to_id("/xex/xax/") == "xax"
+
+    assert os.path.basename("/xex/xax/") == ""
