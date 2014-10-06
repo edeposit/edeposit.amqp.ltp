@@ -9,9 +9,11 @@ import time
 import shutil
 import base64
 import os.path
+import hashlib
 
 from dhtmlparser import HTMLElement
 import xmltodict
+from edeposit.amqp.aleph import marcxml
 
 import settings
 import structures
@@ -71,36 +73,83 @@ def _get_localized_fn(fn, root_dir):
     return local_fn
 
 
-def _compose_info(package_id, root_dir, original_fn, metadata_fn):
+def _path_to_id(path):
+    if path.endswith("/"):
+        path = path[:-1]
+
+    return os.path.basename(path)
+
+
+def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
+    # compute hash for hashfile
+    with open(hash_fn) as f:
+        hash_file_md5 = hashlib.md5(f.read()).hexdigest()
+
     document = {
         "info": {
             "created": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()),
             "metadataversion": "1.0",
-            "packageid": package_id,
+            "packageid": _path_to_id(root_dir),
             "mainmets": _get_localized_fn(metadata_fn, root_dir),
             "itemlist": {
                 "@itemtotal": "1",
-                "item": _get_localized_fn(original_fn, root_dir)
-            }
+                "item": [
+                    _get_localized_fn(original_fn, root_dir),
+                ]
+            },
+            "checksum": {
+                "@type": "MD5",
+                "@checksum": hash_file_md5,
+                "#text": hash_fn
+            },
+            "collection": "edeposit"
         }
     }
 
-    # document["info"]["titleid"] = {
-    #     "@type": "isbn",
-    #     "#text": isbn
-    # }
-    # document["info"]["titleid"] = {
-    #     "@type": "issn",
-    #     "#text": issn
-    # }
-    # document["info"]["titleid"] = {
-    #     "@type": "ccnb",
-    #     "#text": ccnb
-    # }
-    # document["info"]["titleid"] = {
-    #     "@type": "urnnbn",
-    #     "#text": urnnbn
-    # }
+    # get informations from MARC record
+    record = marcxml.MARCXMLRecord(aleph_record)
+
+    # get publisher info
+    if record.getPublisher(None):
+        document["info"]["institution"] = record.getPublisher()
+
+    # collect informations for <titleid> tags
+    isbns = record.getISBNs()
+
+    ccnb = marcxml._undefinedPattern(
+        "".join(record.getDataRecords("015", "a", False)),
+        lambda x: x.strip() == "",
+        None
+    )
+
+    urnnbn = record.getDataRecords("856", "u", False)
+
+    if any([isbns, ccnb, urnnbn]):  # issn
+        document["info"]["titleid"] = []
+
+    for isbn in isbns:
+        document["info"]["titleid"].append({
+            "@type": "isbn",
+            "#text": isbn
+        })
+
+    if ccnb:
+        document["info"]["titleid"].append({
+            "@type": "ccnb",
+            "#text": ccnb
+        })
+
+    if urnnbn:
+        document["info"]["titleid"].append({
+            "@type": "urnnbn",
+            "#text": urnnbn
+        })
+
+    # if issn:
+    #     document["info"]["titleid"].append({
+    #         "@type": "issn",
+    #         "#text": issn
+    #     })
 
     return xmltodict.unparse(document, pretty=True)
 
@@ -117,7 +166,13 @@ def _compose_info(package_id, root_dir, original_fn, metadata_fn):
 
     return dom.prettify()
 
-print _compose_info("id", "root_dir", "root_dir/original_fn", "metadata_fn")
+print _compose_info(
+    "/somewhere/root_dir",
+    "/somewhere/root_dir/original_fn",
+    "/somewhere/root_dir/metadata_fn",
+    "/proc/cpuinfo",
+    open("/home/bystrousak/Plocha/prace/test/aleph/tests/resources/aleph_data_examples/aleph_sources/example4.xml").read()
+)
 
 
 def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
@@ -133,6 +188,13 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
             base64.b64decode(b64_data)
         )
 
+    # count md5 sums
+    md5_fn = os.path.join(root_dir, settings.MD5_FILENAME)
+    with open(md5_fn) as f:
+        f.write(
+            checksum_generator.generate_hashfile(root_dir)
+        )
+
     # create metadata file
     metadata_fn = os.path.join(
         metadata_dir,
@@ -144,7 +206,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
         )
 
     # create info file
-
+    _compose_info(md5_fn)
 
 
 
