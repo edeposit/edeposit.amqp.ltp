@@ -5,11 +5,13 @@
 #
 # Imports =====================================================================
 import shutil
+import base64
 import os.path
 
 import dhtmlparser
 
 import ltp
+import ltp.settings as settings
 
 
 # Variables ===================================================================
@@ -163,3 +165,20 @@ def test_compose_info():
     assert dom.find("itemlist")[0].find("item")[0].getContent() == "/data/ebook.epub"
     assert dom.find("checksum")[0].getContent().endswith("hashfile.md5")
     assert dom.find("checksum")[0].params["checksum"] == "18c0864b36d60f6036bf8eeab5c1fe7d"
+
+
+def test_create_ltp_package():
+    aleph_record = open(OAI_FILENAME).read()
+
+    package_path = ltp.create_ltp_package(
+        aleph_record,
+        121213,
+        "somebook.epub",
+        base64.b64encode(aleph_record)
+    )
+
+    assert os.path.exists(package_path)
+    assert os.path.exists(os.path.join(package_path, settings.INFO_FILENAME))
+    assert os.path.exists(os.path.join(package_path, settings.MD5_FILENAME))
+
+    shutil.rmtree(package_path)
