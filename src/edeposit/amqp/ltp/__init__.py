@@ -28,6 +28,16 @@ import checksum_generator
 
 # Functions & objects =========================================================
 def _get_package_name(prefix=settings.TEMP_DIR):
+    """
+    Return package path. Use uuid to generate package's directory name.
+
+    Args:
+        prefix (str): Where the package will be stored. Default
+                      :attr:`settings.TEMP_DIR`.
+
+    Returns:
+        str: Path to the root directory.
+    """
     return os.path.join(prefix, uuid.uuid4())
 
 
