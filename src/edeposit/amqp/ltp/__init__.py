@@ -5,6 +5,7 @@
 #
 # Imports =====================================================================
 import os
+import uuid
 import time
 import shutil
 import base64
@@ -27,7 +28,7 @@ import checksum_generator
 
 # Functions & objects =========================================================
 def _get_package_name(prefix=settings.TEMP_DIR):
-    return os.path.join(prefix, "dokument/")  # TODO
+    return os.path.join(prefix, uuid.uuid4())
 
 
 def _get_suffix(path):
@@ -87,7 +88,7 @@ def _create_package_hierarchy(prefix=settings.TEMP_DIR):
     `root_dir` is root of the package generated using :attr:`settings.TEMP_DIR`
     and :func:`_get_package_name`.
 
-    `original_dir` is path to the directory, where the data files are stored.
+    `orig_dir` is path to the directory, where the data files are stored.
 
     `metadata_dir` is path to the directory with MODS metadata.
 
@@ -99,7 +100,7 @@ def _create_package_hierarchy(prefix=settings.TEMP_DIR):
         If the `root_dir` exists, it is REMOVED!
 
     Returns:
-        list of str: root_dir, original_dir, metadata_dir
+        list of str: root_dir, orig_dir, metadata_dir
     """
     root_dir = _get_package_name(prefix)
 
@@ -367,34 +368,46 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
 
 
 def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
-    root_dir, original_dir, metadata_dir = _create_package_hierarchy()
+    """
+    Create LTP package as it is specified in specification v1.0 as I understand
+    it.
+
+    Args:
+        aleph_record (str): XML containing full aleph record.
+        book_id (int): More or less unique ID of the book.
+        ebook_fn (str): Original filename of the ebook.
+        b64_data (str): Ebook file encoded in base64 string.
+
+    Returns:
+        str: Name of the root directory in /tmp.
+    """
+    # validate `book_id`
+    try:
+        book_id = int(book_id)
+    except ValueError:
+        raise UserWarning("`book_id` parameter have to be int!")
+
+    root_dir, orig_dir, meta_dir = _create_package_hierarchy()
 
     # create original file
-    original_fn = os.path.join(
-        original_dir,
-        _get_original_fn(book_id, ebook_fn)
-    )
+    original_fn = os.path.join(orig_dir, _get_original_fn(book_id, ebook_fn))
     with open(original_fn, "wb") as f:
         f.write(
             base64.b64decode(b64_data)
         )
 
-    # count md5 sums
-    md5_fn = os.path.join(root_dir, settings.MD5_FILENAME)
-    with open(md5_fn) as f:
-        f.write(
-            checksum_generator.generate_hashfile(root_dir)
-        )
-
     # create metadata file
-    metadata_fn = os.path.join(
-        metadata_dir,
-        _get_metadata_fn(book_id)
-    )
+    metadata_fn = os.path.join(meta_dir, _get_metadata_fn(book_id))
     with open(metadata_fn, "w") as f:
         f.write(
             xslt_transformer.transform_to_mods(aleph_record)
         )
+
+    # count md5 sums
+    md5_fn = os.path.join(root_dir, settings.MD5_FILENAME)
+    checksums = checksum_generator.generate_hashfile(root_dir)
+    with open(md5_fn, "w") as f:
+        f.write(checksums)
 
     # create info file
     with open(os.path.join(root_dir, settings.INFO_FILENAME), "w") as f:
@@ -407,6 +420,8 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
                 aleph_record,
             )
         )
+
+    return root_dir
 
 
 # Main program ================================================================
