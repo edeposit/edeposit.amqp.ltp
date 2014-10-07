@@ -15,6 +15,7 @@ import ltp
 # Variables ===================================================================
 DIRNAME = os.path.dirname(__file__) + "/data/"
 OAI_FILENAME = DIRNAME + "oai_example.oai"
+HASH_FILE = DIRNAME + "hashfile.md5"
 
 
 # Functions & objects =========================================================
@@ -136,10 +137,29 @@ def test_add_order():
 
 
 def test_compose_info():
-    info_file = ltp._compose_info(
+    info_xml = ltp._compose_info(
         "/home/root_dir",
         "/home/root_dir/data/ebook.epub",
         "/home/root_dir/meta/meta.xml",
-        "/home/root_dir/hashfile.md5",
+        HASH_FILE,
         open(OAI_FILENAME).read()
     )
+
+    dom = dhtmlparser.parseString(info_xml.encode("utf-8"))
+
+    assert ":" in dom.find("created")[0].getContent()
+    assert "-" in dom.find("created")[0].getContent()
+    assert "T" in dom.find("created")[0].getContent()
+    assert len(dom.find("created")[0].getContent()) >= 19
+    assert dom.find("metadataversion")[0].getContent() == "1.0"
+    assert dom.find("packageid")[0].getContent() == "root_dir"
+    assert dom.find("mainmets")[0].getContent() == "/meta/meta.xml"
+    assert dom.find("titleid")[0].getContent() == "80-251-0225-4"
+    assert dom.find("titleid")[1].getContent() == "cnb001492461"
+    assert dom.find("collection")[0].getContent() == "edeposit"
+    assert dom.find("institution")[0].getContent() == "Computer Press"
+    assert dom.find("creator")[0].getContent() == "ABA001"
+    assert dom.find("size")[0].getContent() == "0"
+    assert dom.find("itemlist")[0].find("item")[0].getContent() == "/data/ebook.epub"
+    assert dom.find("checksum")[0].getContent().endswith("hashfile.md5")
+    assert dom.find("checksum")[0].params["checksum"] == "18c0864b36d60f6036bf8eeab5c1fe7d"
