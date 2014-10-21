@@ -38,7 +38,10 @@ def _get_package_name(prefix=settings.TEMP_DIR):
     Returns:
         str: Path to the root directory.
     """
-    return os.path.join(prefix, uuid.uuid4())
+    return os.path.join(
+        prefix,
+        str(uuid.uuid4())
+    )
 
 
 def _get_suffix(path):
