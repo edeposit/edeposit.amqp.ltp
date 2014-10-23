@@ -34,12 +34,6 @@ TEMP_DIR = "/tmp"
 #: Path to the directory for LTP export
 EXPORT_DIR = "TODO"
 
-#: Filename of the MD5 file with checksum of the epublication
-MD5_FILENAME = "MD5.md5"
-
-#: Info filename - DON'T CHANGE THIS!
-INFO_FILENAME = "info.xml"
-
 
 # User configuration reader (don't edit this ==================================
 _ALLOWED = [str, int, float]
