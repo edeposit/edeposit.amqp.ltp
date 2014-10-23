@@ -152,7 +152,7 @@ def transform(xml, template):
         _read_marcxml(xml)
     )
 
-    return ET.tostring(newdom, pretty_print=True)
+    return ET.tostring(newdom, pretty_print=True, encoding="utf-8")
 
 
 def transform_to_mods(marc_xml):
