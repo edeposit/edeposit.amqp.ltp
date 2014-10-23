@@ -144,7 +144,7 @@ def _calc_dir_size(path):
     return dir_size
 
 
-def _remove_hairs(inp):
+def _remove_hairs(inp, hairs="/:;,- []<>()"):
     """
     Remove "special" characters from beginning and the end of the `inp`.
 
@@ -157,12 +157,10 @@ def _remove_hairs(inp):
     Returns:
         str: Cleaned string.
     """
-    special_chars = "/:;,- []<>()"
-
-    while inp and inp[-1] in special_chars:
+    while inp and inp[-1] in hairs:
         inp = inp[:-1]
 
-    while inp and inp[0] in special_chars:
+    while inp and inp[0] in hairs:
         inp = inp[1:]
 
     return inp
