@@ -12,6 +12,7 @@ import dhtmlparser
 
 import ltp
 import ltp.settings as settings
+from ltp import fn_composers
 
 
 # Variables ===================================================================
@@ -90,7 +91,6 @@ def test_add_order():
     unordered = {
         "size": 1,
         "created": 1,
-        "mainmets": 1,
         "creator": 1,
         "titleid": 1,
         "itemlist": 1,
@@ -108,7 +108,6 @@ def test_add_order():
         "created",
         "metadataversion",
         "packageid",
-        "mainmets",
         "titleid",
         "collection",
         "institution",
@@ -137,7 +136,6 @@ def test_compose_info():
     assert len(dom.find("created")[0].getContent()) >= 19
     assert dom.find("metadataversion")[0].getContent() == "1.0"
     assert dom.find("packageid")[0].getContent() == "root_dir"
-    assert dom.find("mainmets")[0].getContent() == "/meta/meta.xml"
     assert dom.find("titleid")[0].getContent() == "80-251-0225-4"
     assert dom.find("titleid")[1].getContent() == "cnb001492461"
     assert dom.find("collection")[0].getContent() == "edeposit"
@@ -159,8 +157,20 @@ def test_create_ltp_package():
         base64.b64encode(aleph_record)
     )
 
+    pid = ltp._path_to_id(package_path)
+
     assert os.path.exists(package_path)
-    assert os.path.exists(os.path.join(package_path, settings.INFO_FILENAME))
-    assert os.path.exists(os.path.join(package_path, settings.MD5_FILENAME))
+    assert os.path.exists(
+        os.path.join(
+            package_path,
+            fn_composers.info_fn(pid)
+        )
+    )
+    assert os.path.exists(
+        os.path.join(
+            package_path,
+            fn_composers.checksum_fn(pid)
+        )
+    )
 
     shutil.rmtree(package_path)
