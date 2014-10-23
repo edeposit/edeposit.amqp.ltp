@@ -76,9 +76,9 @@ def _get_original_fn(book_id, ebook_fn):
         ebook_fn (str): Original name of the ebook. Used to get suffix.
 
     Returns:
-        str: Filename in format ``oc_nk-edep-BOOKID.suffix``.
+        str: Filename in format ``oc_nk-BOOKID.suffix``.
     """
-    return "oc_nk-edep-" + str(book_id) + "." + _get_suffix(ebook_fn)
+    return "oc_nk-" + str(book_id) + "." + _get_suffix(ebook_fn)
 
 
 def _get_metadata_fn(book_id):
@@ -89,9 +89,9 @@ def _get_metadata_fn(book_id):
         book_id (int/str): ID of the book, without special characters.
 
     Returns:
-        str: Filename in format ``"meds_nk-edep-BOOKID.xml``.
+        str: Filename in format ``"meds_nk-BOOKID.xml``.
     """
-    return "meds_nk-edep-" + str(book_id) + ".xml"
+    return "mods_nk-" + str(book_id) + ".xml"
 
 
 def _create_package_hierarchy(prefix=settings.TEMP_DIR):
@@ -306,11 +306,15 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
             "created": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()),
             "metadataversion": "1.0",
             "packageid": _path_to_id(root_dir),
-            "mainmets": _get_localized_fn(metadata_fn, root_dir),
+
+            # not used in SIP
+            # "mainmets": _get_localized_fn(metadata_fn, root_dir),
+
             "itemlist": {
-                "@itemtotal": "1",
+                "@itemtotal": "2",
                 "item": [
                     _get_localized_fn(original_fn, root_dir),
+                    _get_localized_fn(metadata_fn, root_dir),
                 ]
             },
             "checksum": {
@@ -343,10 +347,7 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
     ccnb = record.getDataRecords("015", "a", False)
     ccnb = ccnb[0] if ccnb else None
 
-    urnnbn = record.getDataRecords("856", "u", False)
-    urnnbn = urnnbn[0] if urnnbn else None
-
-    if any([isbns, ccnb, urnnbn]):  # issn
+    if any([isbns, ccnb]):  # issn
         document["info"]["titleid"] = []
 
     for isbn in isbns:
@@ -359,12 +360,6 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
         document["info"]["titleid"].append({
             "@type": "ccnb",
             "#text": ccnb
-        })
-
-    if urnnbn:
-        document["info"]["titleid"].append({
-            "@type": "urnnbn",
-            "#text": urnnbn
         })
 
     # TODO: later
@@ -394,13 +389,9 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
     Returns:
         str: Name of the root directory in /tmp.
     """
-    # validate `book_id`
-    try:
-        book_id = int(book_id)
-    except ValueError:
-        raise UserWarning("`book_id` parameter have to be int!")
-
     root_dir, orig_dir, meta_dir = _create_package_hierarchy()
+
+    book_id = _path_to_id(root_dir)
 
     # create original file
     original_fn = os.path.join(orig_dir, _get_original_fn(book_id, ebook_fn))
