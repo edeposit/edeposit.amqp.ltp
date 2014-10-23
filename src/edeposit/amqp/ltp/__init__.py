@@ -21,6 +21,7 @@ import structures
 
 import xslt_transformer
 import checksum_generator
+import fn_composers
 
 
 # Variables ===================================================================
@@ -42,56 +43,6 @@ def _get_package_name(prefix=settings.TEMP_DIR):
         prefix,
         str(uuid.uuid4())
     )
-
-
-def _get_suffix(path):
-    """
-    Return suffix from `path`.
-
-    ``/home/xex/somefile.txt`` --> ``txt``.
-
-    Args:
-        path (str): Full file path.
-
-    Returns:
-        str: Suffix.
-
-    Raises:
-        UserWarning: When / is detected in suffix.
-    """
-    suffix = os.path.basename(path).split(".")[-1]
-
-    if "/" in suffix:
-        raise UserWarning("Filename can't contain '/' in suffix (%s)!" % path)
-
-    return suffix
-
-
-def _get_original_fn(book_id, ebook_fn):
-    """
-    Construct original filename from `book_id` and `ebook_fn`.
-
-    Args:
-        book_id (int/str): ID of the book, without special characters.
-        ebook_fn (str): Original name of the ebook. Used to get suffix.
-
-    Returns:
-        str: Filename in format ``oc_nk-BOOKID.suffix``.
-    """
-    return "oc_nk-" + str(book_id) + "." + _get_suffix(ebook_fn)
-
-
-def _get_metadata_fn(book_id):
-    """
-    Construct filename for metadata file.
-
-    Args:
-        book_id (int/str): ID of the book, without special characters.
-
-    Returns:
-        str: Filename in format ``"meds_nk-BOOKID.xml``.
-    """
-    return "mods_nk-" + str(book_id) + ".xml"
 
 
 def _create_package_hierarchy(prefix=settings.TEMP_DIR):
@@ -394,27 +345,31 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
     book_id = _path_to_id(root_dir)
 
     # create original file
-    original_fn = os.path.join(orig_dir, _get_original_fn(book_id, ebook_fn))
+    original_fn = os.path.join(
+        orig_dir,
+        fn_composers.original_fn(book_id, ebook_fn)
+    )
     with open(original_fn, "wb") as f:
         f.write(
             base64.b64decode(b64_data)
         )
 
     # create metadata file
-    metadata_fn = os.path.join(meta_dir, _get_metadata_fn(book_id))
+    metadata_fn = os.path.join(meta_dir, fn_composers.metadata_fn(book_id))
     with open(metadata_fn, "w") as f:
         f.write(
             xslt_transformer.transform_to_mods(aleph_record)
         )
 
     # count md5 sums
-    md5_fn = os.path.join(root_dir, settings.MD5_FILENAME)
+    md5_fn = os.path.join(root_dir, fn_composers.checksum_fn(book_id))
     checksums = checksum_generator.generate_hashfile(root_dir)
     with open(md5_fn, "w") as f:
         f.write(checksums)
 
     # create info file
-    with open(os.path.join(root_dir, settings.INFO_FILENAME), "w") as f:
+    info_fn = os.path.join(root_dir, fn_composers.info_fn(book_id))
+    with open(info_fn, "w") as f:
         f.write(
             _compose_info(
                 root_dir,
