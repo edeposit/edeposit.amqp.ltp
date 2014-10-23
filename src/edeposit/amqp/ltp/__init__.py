@@ -19,9 +19,10 @@ from edeposit.amqp.aleph import marcxml
 import settings
 import structures
 
+import fn_composers
 import xslt_transformer
 import checksum_generator
-import fn_composers
+from mods_postprocessor import postprocess_mods
 
 
 # Variables ===================================================================
@@ -356,7 +357,10 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
     metadata_fn = os.path.join(meta_dir, fn_composers.metadata_fn(book_id))
     with open(metadata_fn, "w") as f:
         f.write(
-            xslt_transformer.transform_to_mods(aleph_record)
+            postprocess_mods(
+                xslt_transformer.transform_to_mods(aleph_record),
+                book_id
+            )
         )
 
     # count md5 sums
