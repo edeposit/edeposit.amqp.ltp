@@ -37,6 +37,14 @@ def _remove_hairs(inp, hairs="/:;,- []<>()"):
 
 
 def insert_tag(tag, before, root):
+    """
+    Insert `tag` before `before` tag if present. If not, insert it into `root`.
+
+    Args:
+        tag (obj): HTMLElement instance.
+        before (obj): HTMLElement instance.
+        root (obj): HTMLElement instance.
+    """
     if not before:
         root.childs.append(tag)
         tag.parent = root
@@ -46,11 +54,31 @@ def insert_tag(tag, before, root):
 
     # put it before first existing identifier
     parent = before.parent
-    iop = parent.childs.index(before)
     parent.childs.insert(
-        iop,
+        parent.childs.index(before),
         tag
     )
+    tag.parent = parent
+
+
+def transform_content(tags, content_transformer):
+    """
+    Transform content in all `tags` using result of `content_transformer(tag)`
+    call.
+
+    Args:
+        tags (obj/list): HTMLElement instance, or list of HTMLElement
+                         instances.
+        content_transformer (function): Function which is called as
+                                        ``content_transformer(tag)``.
+    """
+    if type(tags) not in [tuple, list]:
+        tags = [tags]
+
+    for tag in tags:
+        tag.childs = [
+            dhtmlparser.HTMLElement(content_transformer(tag))
+        ]
 
 
 def postprocess_mods(mods, package_id):
@@ -89,6 +117,25 @@ def postprocess_mods(mods, package_id):
     )
     insert_tag(uuid_tag, dom.find("mods:identifier"), mods_tag)
 
+    # add marccountry if not found
+    marccountry = dom.find("mods:placeTerm", {"authority": "marccountry"})
+    if not marccountry:
+        marccountry_tag = dhtmlparser.HTMLElement(
+            "mods:place",
+            [
+                dhtmlparser.HTMLElement(
+                    "mods:placeterm",
+                    {"type": "code", "authority": "marccountry"},
+                    [dhtmlparser.HTMLElement("xr")]
+                )
+            ]
+        )
+        insert_tag(
+            marccountry_tag,
+            dom.match("mods:mods", "mods:originInfo", "mods:place"),
+            dom.find("mods:originInfo")[0]
+        )
+
     # add <genre> tag if not found
     genre = dom.find(
         "mods:genre",
@@ -101,6 +148,18 @@ def postprocess_mods(mods, package_id):
         )
         insert_tag(genre_tag, dom.find("mods:originInfo"), mods_tag)
 
-
+    # remove hairs from some tags
+    transform_content(
+        dom.match("mods:mods", "mods:titleInfo", "mods:title"),
+        lambda x: _remove_hairs(x.getContent())
+    )
+    transform_content(
+        dom.match(
+            "mods:originInfo",
+            "mods:place",
+            ["mods:placeTerm", {"type": "text"}]
+        ),
+        lambda x: _remove_hairs(x.getContent())
+    )
 
     return dom.prettify()
