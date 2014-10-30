@@ -6,13 +6,23 @@ used in Czech National Library.
 
 API
 ---
+.. toctree::
+    :maxdepth: 1
 
+    /api/ltp
+    /api/ltp.fn_composers
+    /api/ltp.xslt_transformer
+    /api/ltp.checksum_generator
+    /api/ltp.mods_postprocessor
+    /api/ltp.structures
+    /api/ltp.settings
 
 AMQP connection
 ---------------
 AMQP communication is handled by the
 `edeposit.amqp <http://edeposit-amqp.readthedocs.org>`_ module, specifically by
-the ``edeposit_amqp_ltp.py`` script.
+the ``edeposit_amqp_ltp.py`` script. Bindings to this project are handled by
+:func:`.reactToAMQPMessage`.
 
 Source code
 -----------
