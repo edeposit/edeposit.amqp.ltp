@@ -315,7 +315,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
         b64_data (str): Ebook file encoded in base64 string.
 
     Returns:
-        str: Name of the root directory in /tmp.
+        str: Name of the package's directory in ``/tmp``.
     """
     root_dir, orig_dir, meta_dir = _create_package_hierarchy()
 
@@ -376,7 +376,7 @@ def reactToAMQPMessage(message, UUID):
         UUID (str): Unique ID of received message.
 
     Returns:
-        object: Response class from :mod:`structures`.
+        object: Response class from :mod:`.structures`.
 
     Raises:
         ValueError: if bad type of `message` structure is given.
