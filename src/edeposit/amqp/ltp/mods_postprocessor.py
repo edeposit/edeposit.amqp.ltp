@@ -14,6 +14,23 @@ import dhtmlparser
 
 
 # Functions & objects =========================================================
+def insert_tag(tag, before, root):
+    if not before:
+        root.childs.append(tag)
+        tag.parent = root
+        return
+
+    before = before[0] if type(before) in [tuple, list] else before
+
+    # put it before first existing identifier
+    parent = before.parent
+    iop = parent.childs.index(before)
+    parent.childs.insert(
+        iop,
+        tag
+    )
+
+
 def postprocess_mods(mods, package_id):
     """
     Fix bugs in `mods` produced by XSLT template.
@@ -48,19 +65,19 @@ def postprocess_mods(mods, package_id):
         {"type": "uuid"},
         [dhtmlparser.HTMLElement(package_id)]
     )
+    insert_tag(uuid_tag, dom.find("mods:identifier"), mods_tag)
 
-    identifier = dom.find("mods:identifier")
-    if identifier:
-        identifier = identifier[0]
+    # add <genre> tag if not found
+    genre = dom.find(
+        "mods:genre",
+        fn=lambda x: x.getContent().lower().strip() == "electronic title"
+    )
 
-        # put it before first existing identifier
-        parent = identifier.parent
-        iop = parent.childs.index(identifier)
-        parent.childs.insert(
-            iop,
-            uuid_tag
+    if not genre:
+        genre_tag = dhtmlparser.HTMLElement(
+            "mods:genre",
+            [dhtmlparser.HTMLElement("electronic title")]
         )
-    else:
-        mods_tag.childs.append(uuid_tag)
+        insert_tag(genre_tag, dom.find("mods:originInfo"), mods_tag)
 
     return dom.prettify()
