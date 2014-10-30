@@ -14,6 +14,28 @@ import dhtmlparser
 
 
 # Functions & objects =========================================================
+def _remove_hairs(inp, hairs="/:;,- []<>()"):
+    """
+    Remove "special" characters from beginning and the end of the `inp`.
+
+    Example::
+        ``,a-sd,-/`` -> ``a-sd``.
+
+    Args:
+        inp (str): Input string.
+
+    Returns:
+        str: Cleaned string.
+    """
+    while inp and inp[-1] in hairs:
+        inp = inp[:-1]
+
+    while inp and inp[0] in hairs:
+        inp = inp[1:]
+
+    return inp
+
+
 def insert_tag(tag, before, root):
     if not before:
         root.childs.append(tag)
@@ -72,12 +94,13 @@ def postprocess_mods(mods, package_id):
         "mods:genre",
         fn=lambda x: x.getContent().lower().strip() == "electronic title"
     )
-
     if not genre:
         genre_tag = dhtmlparser.HTMLElement(
             "mods:genre",
             [dhtmlparser.HTMLElement("electronic title")]
         )
         insert_tag(genre_tag, dom.find("mods:originInfo"), mods_tag)
+
+
 
     return dom.prettify()

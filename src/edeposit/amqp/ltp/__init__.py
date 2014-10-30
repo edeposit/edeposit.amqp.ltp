@@ -22,7 +22,7 @@ import structures
 import fn_composers
 import xslt_transformer
 import checksum_generator
-from mods_postprocessor import postprocess_mods
+from mods_postprocessor import postprocess_mods, _remove_hairs
 
 
 # Variables ===================================================================
@@ -143,28 +143,6 @@ def _calc_dir_size(path):
             dir_size += os.path.getsize(full_fn)
 
     return dir_size
-
-
-def _remove_hairs(inp, hairs="/:;,- []<>()"):
-    """
-    Remove "special" characters from beginning and the end of the `inp`.
-
-    Example::
-        ``,a-sd,-/`` -> ``a-sd``.
-
-    Args:
-        inp (str): Input string.
-
-    Returns:
-        str: Cleaned string.
-    """
-    while inp and inp[-1] in hairs:
-        inp = inp[:-1]
-
-    while inp and inp[0] in hairs:
-        inp = inp[1:]
-
-    return inp
 
 
 def _add_order(inp_dict):
