@@ -86,7 +86,7 @@ setup(
         "lxml",
         "pydhtmlparser",
         "xmltodict",
-        "edeposit.amqp.aleph>=1.7.6"
+        "edeposit.amqp.aleph>=1.6.3"
     ],
     extras_require={
         "test": [
@@ -98,5 +98,5 @@ setup(
         ]
     },
 
-    # cmdclass={'sdist': BuildSphinx}
+    cmdclass={'sdist': BuildSphinx}
 )
