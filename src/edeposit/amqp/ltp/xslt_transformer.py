@@ -3,12 +3,6 @@
 #
 # Interpreter version: python 2.7
 #
-"""
-This module is used to apply XSLT template to MARC XML.
-
-API
----
-"""
 # Imports =====================================================================
 import os.path
 import StringIO
