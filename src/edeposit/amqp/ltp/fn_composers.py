@@ -25,7 +25,7 @@ def _get_suffix(path):
         str: Suffix.
 
     Raises:
-        UserWarning: When / is detected in suffix.
+        UserWarning: When ``/`` is detected in suffix.
     """
     suffix = os.path.basename(path).split(".")[-1]
 
@@ -57,7 +57,7 @@ def metadata_fn(book_id):
         book_id (int/str): ID of the book, without special characters.
 
     Returns:
-        str: Filename in format ``"meds_nk-BOOKID.xml``.
+        str: Filename in format ``meds_nk-BOOKID.xml``.
     """
     return "mods_" + str(book_id) + ".xml"
 
@@ -70,7 +70,7 @@ def checksum_fn(book_id):
         book_id (int/str): ID of the book, without special characters.
 
     Returns:
-        str: Filename in format ``"MD5_BOOKID.md5``.
+        str: Filename in format ``MD5_BOOKID.md5``.
     """
     return "MD5_" + str(book_id) + ".md5"
 
@@ -83,6 +83,6 @@ def info_fn(book_id):
         book_id (int/str): ID of the book, without special characters.
 
     Returns:
-        str: Filename in format ``"info_BOOKID.xml``.
+        str: Filename in format ``info_BOOKID.xml``.
     """
     return "info_" + str(book_id) + ".xml"
