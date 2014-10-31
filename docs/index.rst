@@ -14,6 +14,10 @@ API
     /api/ltp.xslt_transformer
     /api/ltp.checksum_generator
     /api/ltp.mods_postprocessor
+
+.. toctree::
+    :maxdepth: 1
+
     /api/ltp.structures
     /api/ltp.settings
 
