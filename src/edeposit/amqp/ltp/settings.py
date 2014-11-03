@@ -31,7 +31,7 @@ import os.path
 #: Path to the temporary directory, where the packages are built.
 TEMP_DIR = "/tmp"
 
-#: Path to the directory for LTP export
+#: Path to the directory for LTP export.
 EXPORT_DIR = "TODO"
 
 

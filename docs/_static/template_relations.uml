@@ -50,9 +50,8 @@ class settings as "settings.py" {
 }
 
 class structures as "structures.py" {
-    AMQP communication
-    structures.
-
+    AMQP communication structures.
+    ---
     $templater:module:structures
 }
 
