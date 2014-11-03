@@ -1,5 +1,5 @@
-ltp.structures module
-=====================
+structures submodule
+====================
 
 .. automodule:: ltp.structures
     :members:

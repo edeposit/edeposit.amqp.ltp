@@ -10,6 +10,10 @@ API
     :maxdepth: 1
 
     /api/ltp
+
+.. toctree::
+    :maxdepth: 1
+
     /api/ltp.fn_composers
     /api/ltp.xslt_transformer
     /api/ltp.checksum_generator

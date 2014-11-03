@@ -1,5 +1,5 @@
-ltp.settings module
-===================
+settings submodule
+==================
 
 .. automodule:: ltp.settings
     :members:
