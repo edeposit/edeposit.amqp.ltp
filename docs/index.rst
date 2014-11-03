@@ -25,6 +25,11 @@ API
     /api/ltp.structures
     /api/ltp.settings
 
+API relations graph
+-------------------
+.. image:: /_static/relations.png
+    :width: 600px
+
 AMQP connection
 ---------------
 AMQP communication is handled by the
