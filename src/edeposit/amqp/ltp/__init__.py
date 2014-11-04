@@ -4,10 +4,12 @@
 # Interpreter version: python 2.7
 #
 # Imports =====================================================================
-import settings
-import structures
+import shutil
+import os.path
 
 import ltp
+import settings
+import structures
 
 
 # Functions & objects =========================================================
@@ -36,4 +38,21 @@ def reactToAMQPMessage(message, UUID):
     Raises:
         ValueError: if bad type of `message` structure is given.
     """
-    pass
+    if _instanceof(message, structures.ExportRequest):
+        tmp_folder = ltp.create_ltp_package(
+            aleph_record=message.aleph_record,
+            book_id=message.book_uuid,
+            ebook_fn=message.filename,
+            b64_data=message.b64_data
+        )
+
+        out_dir = os.path.join(settings.EXPORT_DIR, tmp_folder)
+        if os.path.exists(out_dir):
+            shutil.rmtree(out_dir)
+
+        shutil.move(tmp_folder, settings.EXPORT_DIR)
+        # return structures.ScanResult(message.filename, result)
+
+    raise ValueError(
+        "Unknown type of request: '" + str(type(message)) + "'!"
+    )
