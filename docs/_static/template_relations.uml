@@ -55,16 +55,27 @@ class structures as "structures.py" <<M, Red>> {
     $templater:module:structures
 }
 
+class ltp as "ltp.py" <<M, Red>> {
+    Creates SIP package for LTP.
+
+    $templater:module:ltp
+}
+
 class init as "_​_init__.py" <<M, Red>> {
+    Handles AMQP communication.
+
     $templater:module:__init__
 }
 
-settings -r-> init
-structures -l-> init
-xslt_transformer --d-> init
+settings -r-> ltp
+xslt_transformer --d-> ltp
 
-fn_composers -d-> init
-checksum_generator -d-> init
-mods_postprocessor -d-> init
+fn_composers -d-> ltp
+checksum_generator -d-> ltp
+mods_postprocessor -d-> ltp
+
+ltp -d-> init
+structures -l-> init
+settings --> init
 
 mods_postprocessor .u.> xslt_transformer: fixes
