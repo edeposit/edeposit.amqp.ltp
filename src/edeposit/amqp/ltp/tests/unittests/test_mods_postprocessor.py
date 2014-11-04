@@ -21,5 +21,8 @@ def test_postprocess_mods():
 
     postprocessed = mods_postprocessor.postprocess_mods(result, "someid")
 
+    # with open("xex.xml", "wt") as f:
+    #     f.write(postprocessed)
+
     with open(POSTPROCESSED_FN) as f:
         assert postprocessed == f.read()

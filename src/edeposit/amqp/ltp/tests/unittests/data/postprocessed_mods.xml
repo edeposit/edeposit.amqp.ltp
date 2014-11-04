@@ -13,6 +13,7 @@
     <mods:genre authority="marcgt">handbook</mods:genre>
     <mods:genre authority="czenas">příručky</mods:genre>
     <mods:genre authority="eczenas">handbooks, manuals, etc.</mods:genre>
+    <mods:genre>electronic title</mods:genre>
     <mods:originInfo>
       <mods:place>
         <mods:placeterm type="code" authority="marccountry">xr-</mods:placeTerm>
