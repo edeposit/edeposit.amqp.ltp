@@ -7,27 +7,32 @@
 from collections import namedtuple
 
 
-# Variables ===================================================================
+# Communication classes =======================================================
+class ExportRequest(namedtuple("ExportRequest", ["aleph_record",
+                                                 "book_uuid",
+                                                 "filename",
+                                                 "b64_data"])):
+    """
+    Request structure holding data to export to LTP.
+
+    Attributes:
+        aleph_record (str): String with complete MARC XML / OAI MARC record.
+        book_uuid (str): Unique ID of the book. This have to be in UUID4
+                         format!
+        filename (str): Original filename name of the epublication.
+        b64_data (str): Epublication serialized as BASE64 data string.
+    """
+    pass
 
 
-# Functions & objects =========================================================
-class ExportRequest():
-    def __init__(self, aleph_record, book_id, filename, b64_data):
-        self.aleph_record = aleph_record
-        self.book_id = book_id
-        self.filename = filename
-        self.b64_data = b64_data
+class TrackingRequest(namedtuple("TrackingRequest", ["book_uuid"])):
+    """
+    Ask for state of the export request.
 
-
-class ExportResult():
-    def __init__(self, export_id, exported):
-        self.export_id = export_id
-        self.exported = exported
-
-
-class ExportTrackingRequest():
-    def __init__(self, book_id):
-        self.book_id = book_id
+    Attributes:
+        book_uuid (str): UUID of the book you wan't to track.
+    """
+    pass
 
 
 class TrackingStates():
