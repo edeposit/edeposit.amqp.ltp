@@ -16,7 +16,7 @@ Note:
 Example of the configuration file (``$HOME/edeposit/ltp.json``)::
 
     {
-        "USE_CLAMD": false
+        "EXPORT_DIR": "/somedir/somewhere"
     }
 
 Attributes

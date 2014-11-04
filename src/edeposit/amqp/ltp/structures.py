@@ -30,7 +30,7 @@ class TrackingRequest(namedtuple("TrackingRequest", ["book_uuid"])):
     Ask for state of the export request.
 
     Attributes:
-        book_uuid (str): UUID of the book you wan't to track.
+        book_uuid (str): UUID of the book you want to track.
     """
     pass
 
