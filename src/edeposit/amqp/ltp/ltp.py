@@ -191,6 +191,7 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
     Compose `info` XML file.
 
     Info example::
+
         <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <info>
             <created>2014-07-31T10:58:53</created>
