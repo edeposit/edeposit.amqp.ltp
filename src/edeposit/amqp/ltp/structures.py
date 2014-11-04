@@ -35,13 +35,13 @@ class TrackingRequest(namedtuple("TrackingRequest", ["book_uuid"])):
     pass
 
 
-class TrackingStates():
+class TrackingState():
     def __init__(self, exported, error):
         self.exported = exported
         self.error = error
 
 
-class ExportTrackingResult():
+class TrackingResult():
     def __init__(self, book_id, state):
         self.book_id = book_id
         self.state = state
