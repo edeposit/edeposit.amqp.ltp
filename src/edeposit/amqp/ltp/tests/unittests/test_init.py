@@ -13,5 +13,5 @@
 
 # Tests =======================================================================
 def test_reactToAMQPMessage():
-    raise NotImplemented("Not implemented yet.")
+    raise NotImplementedError("Not implemented yet.")
 
