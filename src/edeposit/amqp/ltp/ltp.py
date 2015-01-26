@@ -331,7 +331,8 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
 
     # create metadata files
     metadata_filenames = []
-    for cnt, mods_record in enumerate(transform_to_mods(aleph_record)):
+    records = transform_to_mods(aleph_record, book_id)
+    for cnt, mods_record in enumerate(records):
         fn = os.path.join(
             meta_dir,
             fn_composers.volume_fn(cnt)

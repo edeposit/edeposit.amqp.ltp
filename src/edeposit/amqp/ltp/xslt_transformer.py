@@ -154,13 +154,14 @@ def transform(xml, template):
     return ET.tostring(newdom, pretty_print=True, encoding="utf-8")
 
 
-def transform_to_mods(marc_xml):
+def transform_to_mods(marc_xml, uuid):
     """
     Convert `marc_xml` to MODS data format.
 
     Args:
         marc_xml (str): Filename or XML string. Don't use ``\\n`` in case of
                         filename.
+        uuid (str): UUID string giving the package ID.
 
     Returns:
         list: Collection of transformed xml strings.
@@ -175,9 +176,7 @@ def transform_to_mods(marc_xml):
     dom = dhtmlparser.parseString(transformed)
     for col in dom.find("mods:mods"):
         mods.append(
-            mods_postprocessor.postprocess_mods_volume(
-                str(col)
-            )
+            mods_postprocessor.postprocess_mods_volume(col, uuid)
         )
 
     return mods
