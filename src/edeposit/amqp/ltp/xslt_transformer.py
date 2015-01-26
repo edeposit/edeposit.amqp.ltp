@@ -8,9 +8,10 @@ import os.path
 import StringIO
 import lxml.etree as ET
 
-
 import dhtmlparser
 from edeposit.amqp.aleph import marcxml
+
+import mods_postprocessor
 
 
 # Variables ===================================================================
@@ -52,6 +53,7 @@ def _add_namespace(marc_xml):
     Returns:
         str: XML with namespace.
     """
+    # return marcxml
     dom = dhtmlparser.parseString(marc_xml)
     collections = dom.find("collection")
 
@@ -161,49 +163,61 @@ def transform_to_mods(marc_xml):
                         filename.
 
     Returns:
-        str: Transformed xml as string.
+        list: Collection of transformed xml strings.
     """
     dirname = os.path.dirname(__file__)
     mods_template = os.path.join(dirname, "xslt/MARC21slim2MODS3-4-NDK.xsl")
 
-    return transform(marc_xml, mods_template)
+    transformed = transform(marc_xml, mods_template)
+
+    # return all mods tags as list
+    mods = []
+    dom = dhtmlparser.parseString(transformed)
+    for col in dom.find("mods:mods"):
+        mods.append(
+            mods_postprocessor.postprocess_mods_volume(
+                str(col)
+            )
+        )
+
+    return mods
 
 
-def transform_to_mods_multimonograph(marc_xml):
-    """
-    Convert `marc_xml` to multimonograph MODS data format.
+# def transform_to_mods_multimonograph(marc_xml):
+#     """
+#     Convert `marc_xml` to multimonograph MODS data format.
 
-    Args:
-        marc_xml (str): Filename or XML string. Don't use ``\\n`` in case of
-                        filename.
+#     Args:
+#         marc_xml (str): Filename or XML string. Don't use ``\\n`` in case of
+#                         filename.
 
-    Returns:
-        str: Transformed xml as string.
-    """
-    dirname = os.path.dirname(__file__)
-    mods_template = os.path.join(
-        dirname,
-        "xslt/MARC21toMultiMonographTitle.xsl"
-    )
+#     Returns:
+#         str: Transformed xml as string.
+#     """
+#     dirname = os.path.dirname(__file__)
+#     mods_template = os.path.join(
+#         dirname,
+#         "xslt/MARC21toMultiMonographTitle.xsl"
+#     )
 
-    return transform(marc_xml, mods_template)
+#     return transform(marc_xml, mods_template)
 
 
-def transform_to_mods_periodical(marc_xml):
-    """
-    Convert `marc_xml` to periodical MODS data format.
+# def transform_to_mods_periodical(marc_xml):
+#     """
+#     Convert `marc_xml` to periodical MODS data format.
 
-    Args:
-        marc_xml (str): Filename or XML string. Don't use ``\\n`` in case of
-                        filename.
+#     Args:
+#         marc_xml (str): Filename or XML string. Don't use ``\\n`` in case of
+#                         filename.
 
-    Returns:
-        str: Transformed xml as string.
-    """
-    dirname = os.path.dirname(__file__)
-    mods_template = os.path.join(
-        dirname,
-        "xslt/MARC21toPeriodicalTitle.xsl"
-    )
+#     Returns:
+#         str: Transformed xml as string.
+#     """
+#     dirname = os.path.dirname(__file__)
+#     mods_template = os.path.join(
+#         dirname,
+#         "xslt/MARC21toPeriodicalTitle.xsl"
+#     )
 
-    return transform(marc_xml, mods_template)
+#     return transform(marc_xml, mods_template)

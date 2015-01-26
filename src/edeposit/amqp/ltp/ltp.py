@@ -19,9 +19,9 @@ from edeposit.amqp.aleph import marcxml
 import settings
 
 import fn_composers
-import xslt_transformer
 import checksum_generator
-from mods_postprocessor import postprocess_mods, _remove_hairs
+from xslt_transformer import transform_to_mods
+from mods_postprocessor import _remove_hairs
 
 
 # Functions & objects =========================================================
@@ -186,7 +186,7 @@ def _add_order(inp_dict):
     return out
 
 
-def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
+def _compose_info(root_dir, files, hash_fn, aleph_record):
     """
     Compose `info` XML file.
 
@@ -237,10 +237,10 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
 
             "itemlist": {
                 "@itemtotal": "2",
-                "item": [
-                    _get_localized_fn(original_fn, root_dir),
-                    _get_localized_fn(metadata_fn, root_dir),
-                ]
+                "item": map(
+                    lambda x: _get_localized_fn(x, root_dir),
+                    files
+                )
             },
             "checksum": {
                 "@type": "MD5",
@@ -297,7 +297,8 @@ def _compose_info(root_dir, original_fn, metadata_fn, hash_fn, aleph_record):
     document["info"] = _add_order(document["info"])
     xml_document = xmltodict.unparse(document, pretty=True)
 
-    return xml_document.replace("<?xml ", '<?xml standalone="yes" ')
+    # return xml_document.replace("<?xml ", '<?xml standalone="yes" ')
+    return xml_document
 
 
 def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
@@ -328,17 +329,20 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
             base64.b64decode(b64_data)
         )
 
-    # create metadata file
-    metadata_fn = os.path.join(meta_dir, fn_composers.metadata_fn(book_id))
-    with open(metadata_fn, "w") as f:
-        f.write(
-            postprocess_mods(
-                xslt_transformer.transform_to_mods(aleph_record),
-                book_id
-            )
+    # create metadata files
+    metadata_filenames = []
+    for cnt, mods_record in enumerate(transform_to_mods(aleph_record)):
+        fn = os.path.join(
+            meta_dir,
+            fn_composers.volume_fn(cnt)
         )
 
-    # count md5 sums
+        with open(fn, "w") as f:
+            f.write(mods_record)
+
+        metadata_filenames.append(fn)
+
+    # collect md5 sums
     md5_fn = os.path.join(root_dir, fn_composers.checksum_fn(book_id))
     checksums = checksum_generator.generate_hashfile(root_dir)
     with open(md5_fn, "w") as f:
@@ -349,11 +353,10 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
     with open(info_fn, "w") as f:
         f.write(
             _compose_info(
-                root_dir,
-                original_fn,
-                metadata_fn,
-                md5_fn,
-                aleph_record,
+                root_dir=root_dir,
+                files=[original_fn] + metadata_filenames,
+                hash_fn=md5_fn,
+                aleph_record=aleph_record,
             )
         )
 

@@ -73,7 +73,7 @@ def transform_content(tags, content_transformer):
         ]
 
 
-def postprocess_mods(mods, package_id=None):
+def postprocess_mods_volume(mods, package_id=None):
     """
     Fix bugs in `mods` produced by XSLT template.
 
@@ -90,7 +90,7 @@ def postprocess_mods(mods, package_id=None):
     # add missing parameter
     mods_tag = dom.find("mods:mods")
     if mods_tag:
-        mods_tag[0].params["ID"] = "MODS_TITLE_0001"
+        mods_tag[0].params["ID"] = "MODS_VOLUME_0001"
 
     # fix invalid type= paramater
     placeterm_tag = dom.match(

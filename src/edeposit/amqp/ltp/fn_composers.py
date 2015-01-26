@@ -62,6 +62,19 @@ def metadata_fn(book_id):
     return "mods_" + str(book_id) + ".xml"
 
 
+def volume_fn(cnt):
+    """
+    Construct filename for 'volume' metadata file.
+
+    Args:
+        cnt (int): Number of the MODS record.
+
+    Returns:
+        str: Filename in format ``mods_volume.xml`` or ``mods_volume_cnt.xml``.
+    """
+    return "mods_volume%s.xml" % ("_%d" if cnt > 0 else "")
+
+
 def checksum_fn(book_id):
     """
     Construct filename for checksum file.
