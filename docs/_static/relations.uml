@@ -19,9 +19,7 @@ class xslt_transformer as "xslt_transformer.py" <<M, Red>> {
 
     oai_to_xml(marc_oai)
     transform(xml, template)
-    transform_to_mods(marc_xml)
-    transform_to_mods_multimonograph(marc_xml)
-    transform_to_mods_periodical(marc_xml)
+    transform_to_mods(marc_xml, uuid)
 }
 
 mods_nonp_single -d-> xslt_transformer: reads
@@ -33,6 +31,7 @@ class fn_composers as "fn_composers.py" <<M, Red>> {
 
     original_fn(book_id, ebook_fn)
     metadata_fn(book_id)
+    volume_fn(cnt)
     checksum_fn(book_id)
     info_fn(book_id)
 }
@@ -50,7 +49,7 @@ class mods_postprocessor as "mods_postprocessor.py" <<M, Red>> {
 
     insert_tag(tag, before, root)
     transform_content(tags, content_transformer)
-    postprocess_mods(mods, package_id)
+    postprocess_mods_volume(mods, uuid)
 }
 
 class settings as "settings.py" <<M, Red>> {
@@ -65,8 +64,8 @@ class structures as "structures.py" <<M, Red>> {
     ---
     class ExportRequest
     class TrackingRequest
-    class TrackingStates
-    class ExportTrackingResult
+    class TrackingState
+    class TrackingResult
 }
 
 class ltp as "ltp.py" <<M, Red>> {
@@ -86,10 +85,10 @@ xslt_transformer --d-> ltp
 
 fn_composers -d-> ltp
 checksum_generator -d-> ltp
-mods_postprocessor -d-> ltp
 
 ltp -d-> init
 structures -l-> init
 settings --> init
 
-mods_postprocessor .u.> xslt_transformer: fixes
+mods_postprocessor -r-> xslt_transformer: fixes
+xslt_transformer --> mods_postprocessor

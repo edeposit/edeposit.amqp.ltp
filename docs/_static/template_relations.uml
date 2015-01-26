@@ -72,10 +72,10 @@ xslt_transformer --d-> ltp
 
 fn_composers -d-> ltp
 checksum_generator -d-> ltp
-mods_postprocessor -d-> ltp
 
 ltp -d-> init
 structures -l-> init
 settings --> init
 
-mods_postprocessor .u.> xslt_transformer: fixes
+mods_postprocessor -r-> xslt_transformer: fixes
+xslt_transformer --> mods_postprocessor
