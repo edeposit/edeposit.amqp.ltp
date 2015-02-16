@@ -134,7 +134,7 @@ def postprocess_mods_volume(mods, uuid):
             "mods:place",
             [
                 dhtmlparser.HTMLElement(
-                    "mods:placeterm",
+                    "mods:placeTerm",
                     {"type": "code", "authority": "marccountry"},
                     [dhtmlparser.HTMLElement("xr")]
                 )
