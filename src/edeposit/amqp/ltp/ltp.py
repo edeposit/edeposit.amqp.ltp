@@ -256,10 +256,9 @@ def _compose_info(root_dir, files, hash_fn, aleph_record):
     record = marcxml.MARCXMLRecord(aleph_record)
 
     # get publisher info
+    publisher = unicode(record.getPublisher(), "utf-8")
     if record.getPublisher(None):
-        document["info"]["institution"] = _remove_hairs(
-            record.getPublisher()
-        )
+        document["info"]["institution"] = _remove_hairs(publisher)
 
     # get <creator> info
     creator = record.getDataRecords("910", "a", False)
@@ -298,7 +297,7 @@ def _compose_info(root_dir, files, hash_fn, aleph_record):
     xml_document = xmltodict.unparse(document, pretty=True)
 
     # return xml_document.replace("<?xml ", '<?xml standalone="yes" ')
-    return xml_document
+    return xml_document.encode("utf-8")
 
 
 def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
