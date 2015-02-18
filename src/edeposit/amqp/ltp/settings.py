@@ -34,6 +34,9 @@ TEMP_DIR = "/tmp"
 #: Path to the directory for LTP export.
 EXPORT_DIR = "/home/ltp/edep2ltp"
 
+#: Path to the directory for LTP import.
+IMPORT_DIR = "/home/ltp/ltp2edep"
+
 
 # User configuration reader (don't edit this ==================================
 _ALLOWED = [str, int, float]
