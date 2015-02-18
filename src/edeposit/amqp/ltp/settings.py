@@ -32,7 +32,7 @@ import os.path
 TEMP_DIR = "/tmp"
 
 #: Path to the directory for LTP export.
-EXPORT_DIR = "TODO"
+EXPORT_DIR = "/home/ltp/edep2ltp"
 
 
 # User configuration reader (don't edit this ==================================
