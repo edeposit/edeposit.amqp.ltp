@@ -1,8 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-# Ubuntu packages: clamav clamav-daemon
-# Suse packages: clamav
-
 import os
 import os.path
 import shutil
