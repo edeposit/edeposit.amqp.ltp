@@ -164,11 +164,15 @@ def compose_info(root_dir, files, hash_fn, aleph_record):
     with open(hash_fn) as f:
         hash_file_md5 = hashlib.md5(f.read()).hexdigest()
 
+    schema_location = "http://www.ndk.cz/standardy-digitalizace/info11.xsd"
     document = {
         "info": {
+            "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "@xsi:noNamespaceSchemaLocation": schema_location,
             "created": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()),
             "metadataversion": "1.0",
             "packageid": _path_to_id(root_dir),
+            "mainmets": "",
 
             # not used in SIP
             # "mainmets": _get_localized_fn(metadata_fn, root_dir),
