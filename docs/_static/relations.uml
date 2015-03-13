@@ -91,6 +91,12 @@ class structures as "structures.py" <<M, Red>> {
     class TrackingResult
 }
 
+class info_composer as "info_composer.py" <<M, Red>> {
+    Create the info.xml file.
+
+    compose_info(root_dir, files, hash_fn, aleph_record)
+}
+
 class ltp as "ltp.py" <<M, Red>> {
     Creates SIP package for LTP.
 
@@ -103,15 +109,18 @@ class init as "_​_init__.py" <<M, Red>> {
     reactToAMQPMessage(message, send_back)
 }
 
-settings -r-> ltp
+shared_funcs -d----> info_composer
+
 xslt_transformer --d-> ltp
+settings -l-> ltp
 
 fn_composers -d-> ltp
+info_composer -r-> ltp
 checksum_generator -d-> ltp
 
 ltp -d-> init
 structures -l-> init
-settings --> init
+settings -d-> init
 
 mp_init -r-> xslt_transformer: fixes
 xslt_transformer --> mp_init

@@ -72,6 +72,12 @@ class structures as "structures.py" <<M, Red>> {
     $templater:module:structures
 }
 
+class info_composer as "info_composer.py" <<M, Red>> {
+    Create the info.xml file.
+
+    $templater:module:info_composer
+}
+
 class ltp as "ltp.py" <<M, Red>> {
     Creates SIP package for LTP.
 
@@ -84,15 +90,18 @@ class init as "_​_init__.py" <<M, Red>> {
     $templater:module:__init__
 }
 
-settings -r-> ltp
+shared_funcs -d----> info_composer
+
 xslt_transformer --d-> ltp
+settings -l-> ltp
 
 fn_composers -d-> ltp
+info_composer -r-> ltp
 checksum_generator -d-> ltp
 
 ltp -d-> init
 structures -l-> init
-settings --> init
+settings -d-> init
 
 mp_init -r-> xslt_transformer: fixes
 xslt_transformer --> mp_init
