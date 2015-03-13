@@ -19,6 +19,7 @@ OAI_FILENAME = DIRNAME + "oai_example.oai"
 CONVERTED_MARC_FN = DIRNAME + "converted_oai.xml"
 XSLT_FILENAME = DIRNAME + "MARC21slim2MODS3-4-NDK.xsl"
 TRANSFORMED_FN = DIRNAME + "transformed_mods.xml"
+POSTPROCESSED_FN = DIRNAME + "postprocessed_mods.xml"
 
 
 # Functions & objects =========================================================
@@ -145,7 +146,7 @@ def test_transform():
 
 
 def test_transform_to_mods():
-    result = xslt_transformer.transform_to_mods(OAI_FILENAME)
+    result = xslt_transformer.transform_to_mods(OAI_FILENAME, "someid")
 
-    with open(TRANSFORMED_FN) as f:
-        assert result == f.read()
+    with open(POSTPROCESSED_FN) as f:
+        assert result[0] == f.read()

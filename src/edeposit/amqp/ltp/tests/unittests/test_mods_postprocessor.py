@@ -4,7 +4,10 @@
 # Interpreter version: python 2.7
 #
 # Imports =====================================================================
-from ltp import mods_postprocessor, xslt_transformer
+from ltp import xslt_transformer
+from ltp import mods_postprocessor
+from ltp.mods_postprocessor.shared_funcs import remove_hairs
+
 import test_xslt_transformer
 
 
@@ -13,16 +16,18 @@ POSTPROCESSED_FN = test_xslt_transformer.DIRNAME + "postprocessed_mods.xml"
 
 
 # Tests =======================================================================
+def test_remove_hairs():
+    assert remove_hairs(",a-sd,-/") == "a-sd"
+
+
 def test_postprocess_mods():
-    result = xslt_transformer.transform_to_mods(test_xslt_transformer.OAI_FILENAME)
-
-    with open(test_xslt_transformer.TRANSFORMED_FN) as f:
-        assert result == f.read()
-
-    postprocessed = mods_postprocessor.postprocess_mods(result, "someid")
+    result = xslt_transformer.transform_to_mods(
+        test_xslt_transformer.OAI_FILENAME,
+        "someid"
+    )
 
     # with open("xex.xml", "wt") as f:
-    #     f.write(postprocessed)
+        # f.write(result[0])
 
     with open(POSTPROCESSED_FN) as f:
-        assert postprocessed == f.read()
+        assert result[0] == f.read()
