@@ -37,11 +37,28 @@ class checksum_generator as "checksum_generator.py" <<M, Red>> {
     $templater:module:checksum_generator
 }
 
-class mods_postprocessor as "mods_postprocessor.py" <<M, Red>> {
-    Used to fix data after XSLT templates.
+package mods_postprocessor {
+    class mp_init as "_​_init__.py" <<M, Red>> {
+        Used to fix data after XSLT templates.
 
-    $templater:module:mods_postprocessor
+        $templater:module:mods_postprocessor/__init__
+    }
+    class shared_funcs as "shared_funcs.py" <<M, Red>> {
+        Functions shared in mods_postprocessor/ module.
+
+        $templater:module:mods_postprocessor/shared_funcs
+    }
+    class monograph as "monograph.py" <<M, Red>> {
+        Functions used to postprocess Monograph
+        MODS XML.
+
+        $templater:module:mods_postprocessor/monograph
+    }
 }
+
+shared_funcs -d-> monograph: uses
+monograph -d-> mp_init: is imported
+
 
 class settings as "settings.py" <<M, Red>> {
     Project settings.
@@ -77,5 +94,5 @@ ltp -d-> init
 structures -l-> init
 settings --> init
 
-mods_postprocessor -r-> xslt_transformer: fixes
-xslt_transformer --> mods_postprocessor
+mp_init -r-> xslt_transformer: fixes
+xslt_transformer --> mp_init

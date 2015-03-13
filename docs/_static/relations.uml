@@ -44,13 +44,36 @@ class checksum_generator as "checksum_generator.py" <<M, Red>> {
     generate_hashfile(directory, blacklist)
 }
 
-class mods_postprocessor as "mods_postprocessor.py" <<M, Red>> {
-    Used to fix data after XSLT templates.
+package mods_postprocessor {
+    class mp_init as "_​_init__.py" <<M, Red>> {
+        Used to fix data after XSLT templates.
 
-    insert_tag(tag, before, root)
-    transform_content(tags, content_transformer)
-    postprocess_mods_volume(mods, uuid)
+    }
+    class shared_funcs as "shared_funcs.py" <<M, Red>> {
+        Functions shared in mods_postprocessor/ module.
+
+        remove_hairs(inp, hairs)
+        insert_tag(tag, before, root)
+        transform_content(tags, content_transformer)
+    }
+    class monograph as "monograph.py" <<M, Red>> {
+        Functions used to postprocess Monograph
+        MODS XML.
+
+        get_mods_tag(dom)
+        add_missing_xml_attributes(dom, counter)
+        fix_invalid_type_parameter(dom)
+        add_uuid(dom, uuid)
+        add_marccountry_tag(dom)
+        add_genre(dom)
+        remove_hairs_from_tags(dom)
+        postprocess_monograph(mods, uuid, counter)
+    }
 }
+
+shared_funcs -d-> monograph: uses
+monograph -d-> mp_init: is imported
+
 
 class settings as "settings.py" <<M, Red>> {
     Project settings.
@@ -77,7 +100,7 @@ class ltp as "ltp.py" <<M, Red>> {
 class init as "_​_init__.py" <<M, Red>> {
     Handles AMQP communication.
 
-    reactToAMQPMessage(message, UUID)
+    reactToAMQPMessage(message, send_back)
 }
 
 settings -r-> ltp
@@ -90,5 +113,5 @@ ltp -d-> init
 structures -l-> init
 settings --> init
 
-mods_postprocessor -r-> xslt_transformer: fixes
-xslt_transformer --> mods_postprocessor
+mp_init -r-> xslt_transformer: fixes
+xslt_transformer --> mp_init
