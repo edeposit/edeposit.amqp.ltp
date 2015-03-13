@@ -152,8 +152,7 @@ def compose_info(root_dir, files, hash_fn, aleph_record):
 
     Args:
         root_dir (str): Absolute path to the root directory.
-        original_fn (str): Absolute path to the ebook file.
-        metadata_fn (str): Absolute path to the metadata file.
+        files (list): Absolute paths to all ebook and metadata files.
         hash_fn (str): Absolute path to the MD5 file.
         aleph_record (str): String with Aleph record with metadata.
 
