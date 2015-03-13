@@ -21,7 +21,7 @@ import settings
 import fn_composers
 import checksum_generator
 from xslt_transformer import transform_to_mods
-from mods_postprocessor import _remove_hairs
+from mods_postprocessor.shared_funcs import remove_hairs
 
 
 # Functions & objects =========================================================
@@ -258,7 +258,7 @@ def _compose_info(root_dir, files, hash_fn, aleph_record):
     # get publisher info
     publisher = unicode(record.getPublisher(), "utf-8")
     if record.getPublisher(None):
-        document["info"]["institution"] = _remove_hairs(publisher)
+        document["info"]["institution"] = remove_hairs(publisher)
 
     # get <creator> info
     creator = record.getDataRecords("910", "a", False)

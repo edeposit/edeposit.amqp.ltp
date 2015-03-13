@@ -174,9 +174,9 @@ def transform_to_mods(marc_xml, uuid):
     # return all mods tags as list
     mods = []
     dom = dhtmlparser.parseString(transformed)
-    for col in dom.find("mods:mods"):
+    for cnt, col in enumerate(dom.find("mods:mods")):
         mods.append(
-            mods_postprocessor.postprocess_mods_volume(col, uuid)
+            mods_postprocessor.postprocess_monograph(col, uuid, cnt)
         )
 
     return mods
