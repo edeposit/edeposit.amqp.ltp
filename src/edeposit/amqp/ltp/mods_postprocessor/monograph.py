@@ -160,6 +160,89 @@ def fix_issuance(dom):
     )
 
 
+def fix_location_tag(dom):
+    """
+    Repair the <mods:location> tag (the XSLT template returns things related to
+    paper books, not electronic documents).
+    """
+    location = dom.match(
+        "mods:mods",
+        "mods:location",
+    )
+
+    # if no location tag found, there is nothing to be fixed
+    if not location:
+        return
+    location = location[0]
+
+    # fix only <mods:location> containing <mods:physicalLocation> tags
+    if not location.find("mods:physicalLocation"):
+        return
+
+    url = location.find("mods:url", {"usage": "primary display"})
+
+    # parse URL
+    if url:
+        url = url[0].getContent()
+    else:
+        urls = filter(
+            lambda x: x.getContent(),
+            location.find("mods:url")
+        )
+
+        if not urls:
+            return
+
+        url = max(urls, key=lambda x: len(x))
+
+    # replace the code with new tag
+    replacer = dhtmlparser.parseString("""
+  <mods:location>
+    <mods:holdingSimple>
+      <mods:copyInformation>
+        <mods:electronicLocator>%s</mods:electronicLocator>
+      </mods:copyInformation>
+    </mods:holdingSimple>
+  </mods:location>
+    """ % url)
+
+    location.replaceWith(
+        replacer.find("mods:location")[0]
+    )
+
+    dhtmlparser.makeDoubleLinked(dom)
+
+
+def fix_related_item_tag(dom):
+    """
+    Remove <mods:relatedItem> tag in case that there is only <mods:location>
+    subtag.
+    """
+    location = dom.match(
+        "mods:mods",
+        "mods:relatedItem",
+        "mods:location"
+    )
+
+    if not location:
+        return
+    location = location[0]
+
+    location.replaceWith(
+        dhtmlparser.HTMLElement()
+    )
+
+    # remove whole <mods:relatedItem> tag, if there is nothing else left in it
+    related_item = dom.match(
+        "mods:mods",
+        "mods:relatedItem"
+    )
+    related_item = related_item[0]
+
+    if not related_item.getContent().strip():
+        related_item.replaceWith(dhtmlparser.HTMLElement())
+
+
 def postprocess_monograph(mods, uuid, counter):
     """
     Fix bugs in `mods` produced by XSLT template.
@@ -194,5 +277,7 @@ def postprocess_monograph(mods, uuid, counter):
     remove_hairs_from_tags(dom)
 
     fix_issuance(dom)
+    fix_location_tag(dom)
+    fix_related_item_tag(dom)
 
     return '<?xml version="1.0" encoding="UTF-8"?>\n\n' + dom.prettify()
