@@ -86,15 +86,19 @@ def add_marccountry_tag(dom):
 def add_genre(dom):
     mods_tag = get_mods_tag(dom)
 
+    matched_genres = [
+        "electronic title",
+        "electronic volume",
+    ]
     genre = dom.find(
         "mods:genre",
-        fn=lambda x: x.getContent().lower().strip() == "electronic title"
+        fn=lambda x: x.getContent().lower().strip() in matched_genres
     )
 
     if not genre:
         genre_tag = dhtmlparser.HTMLElement(
             "mods:genre",
-            [dhtmlparser.HTMLElement("electronic title")]
+            [dhtmlparser.HTMLElement("electronic volume")]
         )
         insert_tag(genre_tag, dom.find("mods:originInfo"), mods_tag)
 
