@@ -25,7 +25,7 @@
     <mods:publisher>Computer Press</mods:publisher>
     <mods:dateIssued>2004</mods:dateIssued>
     <mods:edition>Vyd. 1.</mods:edition>
-    <mods:issuance>monographic</mods:issuance>
+    <mods:issuance>single unit</mods:issuance>
   </mods:originInfo>
   <mods:language>
     <mods:languageTerm authority="iso639-2b" type="code">cze</mods:languageTerm>

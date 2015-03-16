@@ -118,6 +118,23 @@ def remove_hairs_from_tags(dom):
     )
 
 
+def fix_issuance(dom):
+    """
+    Fix <mods:issuance> for monographic tags from `monographic` to
+    `single_unit`.
+    """
+    transform_content(
+        dom.match(
+            "mods:originInfo",
+            {
+                "tag_name": "mods:issuance",
+                "fn": lambda x: x.getContent() == "monographic"
+            }
+        ),
+        lambda x: "single unit"
+    )
+
+
 def postprocess_monograph(mods, uuid, counter):
     """
     Fix bugs in `mods` produced by XSLT template.
@@ -150,5 +167,7 @@ def postprocess_monograph(mods, uuid, counter):
 
     # remove hairs from some tags
     remove_hairs_from_tags(dom)
+
+    fix_issuance(dom)
 
     return '<?xml version="1.0" encoding="UTF-8"?>\n\n' + dom.prettify()
