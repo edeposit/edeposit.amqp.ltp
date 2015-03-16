@@ -13,10 +13,16 @@ from shared_funcs import transform_content
 
 # Functions & objects =========================================================
 def get_mods_tag(dom):
+    """
+    Find and return HTMLElement with ``<mods:mods>`` tag from the `dom`.
+    """
     return dom.find("mods:mods")[0]
 
 
 def add_missing_xml_attributes(dom, counter):
+    """
+    Add `xmlns` and `ID` attributes to ``<mods:mods>`` tag.
+    """
     mods_tag = get_mods_tag(dom)
 
     if mods_tag:
@@ -37,6 +43,9 @@ def add_missing_xml_attributes(dom, counter):
 
 
 def fix_invalid_type_parameter(dom):
+    """
+    "Make sure that ``<mods:placeTerm>`` has ``type="code"`` attribute.
+    """
     # fix invalid type= paramater
     placeterm_tag = dom.match(
         "mods:originInfo",
@@ -48,6 +57,9 @@ def fix_invalid_type_parameter(dom):
 
 
 def add_uuid(dom, uuid):
+    """
+    Add ``<mods:identifier>`` with `uuid`.
+    """
     mods_tag = get_mods_tag(dom)
 
     uuid_tag = dhtmlparser.HTMLElement(
@@ -60,6 +72,9 @@ def add_uuid(dom, uuid):
 
 
 def add_marccountry_tag(dom):
+    """
+    Add ``<mods:placeTerm>`` tag with proper content.
+    """
     marccountry = dom.find("mods:placeTerm", {"authority": "marccountry"})
 
     # don't add again if already defined
@@ -72,7 +87,7 @@ def add_marccountry_tag(dom):
             dhtmlparser.HTMLElement(
                 "mods:placeTerm",
                 {"type": "code", "authority": "marccountry"},
-                [dhtmlparser.HTMLElement("xr")]
+                [dhtmlparser.HTMLElement("xr-")]
             )
         ]
     )
@@ -84,6 +99,10 @@ def add_marccountry_tag(dom):
 
 
 def add_genre(dom):
+    """
+    Add ``<mods:genre>`` with `electronic volume` content into
+    ``<mods:originInfo``.
+    """
     mods_tag = get_mods_tag(dom)
 
     matched_genres = [
@@ -104,6 +123,12 @@ def add_genre(dom):
 
 
 def remove_hairs_from_tags(dom):
+    """
+    Use :func:`.remove_hairs` to some of the tags:
+
+        - mods:title
+        - mods:placeTerm
+    """
     transform_content(
         dom.match("mods:mods", "mods:titleInfo", "mods:title"),
         lambda x: remove_hairs(x.getContent())
