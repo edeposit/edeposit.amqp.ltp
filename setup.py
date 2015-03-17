@@ -32,7 +32,6 @@ setup(
 
     packages=find_packages('src'),
     package_dir={'': 'src'},
-    package_data={'': ['edeposit/amqp/ltp/xslt/*.xsl']},
 
     # scripts=[''],
 
@@ -42,9 +41,7 @@ setup(
     install_requires=[
         'setuptools',
         "lxml",
-        "pydhtmlparser>=2.0.9",
-        "xmltodict",
-        "edeposit.amqp.aleph>=1.6.3"
+        "marcxml2mods",
     ],
     extras_require={
         "test": [

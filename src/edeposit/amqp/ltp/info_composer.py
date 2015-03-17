@@ -13,7 +13,7 @@ from collections import OrderedDict
 import xmltodict
 from edeposit.amqp.aleph import marcxml
 
-from mods_postprocessor.shared_funcs import remove_hairs
+from marcxml2mods.mods_postprocessor.shared_funcs import remove_hairs
 
 
 # Functions & classes =========================================================

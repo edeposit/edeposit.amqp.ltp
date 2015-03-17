@@ -15,7 +15,7 @@ import settings
 import fn_composers
 import info_composer
 import checksum_generator
-from xslt_transformer import transform_to_mods
+from marcxml2mods.xslt_transformer import transform_to_mods
 
 
 # Functions & objects =========================================================
