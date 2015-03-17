@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.10.0
+------
+    - Fixed a lot of bugs.
+    - Applied feedback from the LTP team.
+    - Code for the MODS transformation moved into own module https://github.com/edeposit/marcxml2mods
+
 0.9.2
 -----
     - Fixed some bugs, comments. Added more postprocessing.
