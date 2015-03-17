@@ -6,3 +6,4 @@ MANIFEST
 *.html
 src/edeposit/amqp/ltp/aleph
 src/edeposit/amqp/ltp/decoders/aleph
+src/edeposit/amqp/ltp/marcxml2mods
