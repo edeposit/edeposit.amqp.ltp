@@ -4,6 +4,12 @@ edeposit.amqp.ltp
 This project provides AMQP bindings for LTP (Long Time Preservation) system
 used in Czech National Library.
 
+The LTP is basically archive for digital documents for long time periods
+(hundred of years).
+
+Access to this archive is restricted, so if you wish to use this module for
+yourself, you will need to negotiate access for yourself.
+
 API
 ---
 .. toctree::
@@ -16,9 +22,7 @@ API
 
     /api/ltp.ltp
     /api/ltp.fn_composers
-    /api/ltp.xslt_transformer
     /api/ltp.checksum_generator
-    /api/ltp.mods_postprocessor
 
 .. toctree::
     :maxdepth: 1

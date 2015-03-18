@@ -1,32 +1,17 @@
-package xslt {
-    class mods_nonp_single as "MARC21slim2MODS3-4-NDK.xsl" <<X, Green>> {
-        Converts Aleph's non-periodical
-        non-multi-monograph metadata to
-        MODS.
+package marcxml2mods {
+    class xslt_transformer as "xslt_transformer.py" <<M, Green>> {
+        Used to transform Aleph's metadata to MODS.
     }
-    class mods_nonp_multi as "MARC21toMultiMonographTitle.xsl" <<X, Green>> {
-        Converts Aleph's non-periodical
-        multi-monograph metadata to MODS.
-    }
-    class mods_per as "MARC21toPeriodicalTitle.xsl" <<X, Green>> {
-        Converts Aleph's periodical
-        metadata to MODS.
+    package mods_postprocessor {
+        class shared_funcs as "shared_funcs.py" <<M, Green>> {
+            Functions shared in mods_postprocessor/ module.
+
+            remove_hairs()
+        }
     }
 }
 
-class xslt_transformer as "xslt_transformer.py" <<M, Red>> {
-    Used to transform Aleph's metadata to MODS.
-
-    oai_to_xml(marc_oai)
-    transform(xml, template)
-    transform_to_mods(marc_xml, uuid)
-}
-
-mods_nonp_single -d-> xslt_transformer: reads
-mods_nonp_multi .d.> xslt_transformer: reads
-mods_per .d.> xslt_transformer: reads
-
-class fn_composers as "fn_composers.py" <<M, Red>> {
+class fn_composers as "fn_composers.py" <<M, Green>> {
     Dynamically creates filenames.
 
     original_fn(book_id, ebook_fn)
@@ -36,7 +21,7 @@ class fn_composers as "fn_composers.py" <<M, Red>> {
     info_fn(book_id)
 }
 
-class checksum_generator as "checksum_generator.py" <<M, Red>> {
+class checksum_generator as "checksum_generator.py" <<M, Green>> {
     Generates checksums for all files in SIP
     package.
 
@@ -44,45 +29,14 @@ class checksum_generator as "checksum_generator.py" <<M, Red>> {
     generate_hashfile(directory, blacklist)
 }
 
-package mods_postprocessor {
-    class mp_init as "_​_init__.py" <<M, Red>> {
-        Used to fix data after XSLT templates.
-
-    }
-    class shared_funcs as "shared_funcs.py" <<M, Red>> {
-        Functions shared in mods_postprocessor/ module.
-
-        remove_hairs(inp, hairs)
-        insert_tag(tag, before, root)
-        transform_content(tags, content_transformer)
-    }
-    class monograph as "monograph.py" <<M, Red>> {
-        Functions used to postprocess Monograph
-        MODS XML.
-
-        get_mods_tag(dom)
-        add_missing_xml_attributes(dom, counter)
-        fix_invalid_type_parameter(dom)
-        add_uuid(dom, uuid)
-        add_marccountry_tag(dom)
-        add_genre(dom)
-        remove_hairs_from_tags(dom)
-        postprocess_monograph(mods, uuid, counter)
-    }
-}
-
-shared_funcs -d-> monograph: uses
-monograph -d-> mp_init: is imported
-
-
-class settings as "settings.py" <<M, Red>> {
+class settings as "settings.py" <<M, Green>> {
     Project settings.
 
     get_all_constants()
     substitute_globals(config_dict)
 }
 
-class structures as "structures.py" <<M, Red>> {
+class structures as "structures.py" <<M, Green>> {
     AMQP communication structures.
     ---
     class ExportRequest
@@ -91,27 +45,27 @@ class structures as "structures.py" <<M, Red>> {
     class TrackingResult
 }
 
-class info_composer as "info_composer.py" <<M, Red>> {
+class info_composer as "info_composer.py" <<M, Green>> {
     Create the info.xml file.
 
     compose_info(root_dir, files, hash_fn, aleph_record)
 }
 
-class ltp as "ltp.py" <<M, Red>> {
+class ltp as "ltp.py" <<M, Green>> {
     Creates SIP package for LTP.
 
     create_ltp_package(aleph_record, book_id, ebook_fn, b64_data)
 }
 
-class init as "_​_init__.py" <<M, Red>> {
+class init as "_​_init__.py" <<M, Green>> {
     Handles AMQP communication.
 
     reactToAMQPMessage(message, send_back)
 }
 
-shared_funcs -d----> info_composer
+shared_funcs -d----> info_composer: uses remove_hairs()
+xslt_transformer <--d-> ltp: transforms MARC XML to MODS
 
-xslt_transformer --d-> ltp
 settings -l-> ltp
 
 fn_composers -d-> ltp
@@ -121,6 +75,3 @@ checksum_generator -d-> ltp
 ltp -d-> init
 structures -l-> init
 settings -d-> init
-
-mp_init -r-> xslt_transformer: fixes
-xslt_transformer --> mp_init
