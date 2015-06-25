@@ -1,0 +1,3 @@
+lxml
+marcxml2mods
+remove_hairs

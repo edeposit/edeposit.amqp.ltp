@@ -38,11 +38,7 @@ setup(
     namespace_packages=['edeposit', 'edeposit.amqp'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-        'setuptools',
-        "lxml",
-        "marcxml2mods",
-    ],
+    install_requires=open("requirements.txt").read().splitlines(),
     extras_require={
         "test": [
             "pytest"

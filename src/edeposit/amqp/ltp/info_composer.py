@@ -11,9 +11,8 @@ import hashlib
 from collections import OrderedDict
 
 import xmltodict
+from remove_hairs import remove_hairs
 from edeposit.amqp.aleph import marcxml
-
-from marcxml2mods.mods_postprocessor.shared_funcs import remove_hairs
 
 
 # Functions & classes =========================================================
