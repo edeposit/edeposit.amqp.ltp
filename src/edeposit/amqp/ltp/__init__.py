@@ -9,7 +9,10 @@ import os.path
 
 import ltp
 import settings
-import structures
+
+from amqp_structures import ExportRequest
+from amqp_structures import TrackingRequest
+from amqp_structures import TrackingResponse
 
 
 # Functions & objects =========================================================
@@ -41,7 +44,7 @@ def reactToAMQPMessage(message, send_back):
     Raises:
         ValueError: if bad type of `message` structure is given.
     """
-    if _instanceof(message, structures.ExportRequest):
+    if _instanceof(message, ExportRequest):
         tmp_folder = ltp.create_ltp_package(
             aleph_record=message.aleph_record,
             book_id=message.book_uuid,
