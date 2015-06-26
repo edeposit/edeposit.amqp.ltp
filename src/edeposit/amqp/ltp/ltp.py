@@ -15,7 +15,7 @@ import settings
 import fn_composers
 import info_composer
 import checksum_generator
-from marcxml2mods.xslt_transformer import transform_to_mods
+from marcxml2mods import marcxml2mods
 
 
 # Functions & objects =========================================================
@@ -89,7 +89,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
     """
     root_dir, orig_dir, meta_dir = _create_package_hierarchy()
 
-    book_id = info_composer._path_to_id(root_dir)
+    book_id = info_composer._path_to_id(root_dir)  # TODO: wtf?
 
     # create original file
     original_fn = os.path.join(
@@ -103,7 +103,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
 
     # create metadata files
     metadata_filenames = []
-    records = transform_to_mods(aleph_record, book_id)
+    records = marcxml2mods(aleph_record, book_id)
     for cnt, mods_record in enumerate(records):
         fn = os.path.join(
             meta_dir,
