@@ -1,3 +1,4 @@
 lxml
 marcxml2mods
+odictliteral
 remove_hairs
