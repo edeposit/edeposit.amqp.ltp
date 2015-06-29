@@ -15,8 +15,7 @@ import ltp.info_composer as icp
 
 
 # Variables ===================================================================
-DIRNAME = os.path.dirname(__file__) + "/data/"
-HASH_FILE = DIRNAME + "hashfile.md5"
+DIRNAME = os.path.join(os.path.dirname(__file__), "/data/")
 
 
 # Fixtures ====================================================================
@@ -34,7 +33,7 @@ def info_xml():
             "/home/root_dir/data/ebook.epub",
             "/home/root_dir/meta/meta.xml",
         ],
-        HASH_FILE,
+        os.path.join(DIRNAME, "hashfile.md5"),
         oai_file()
     )
 
