@@ -1,6 +1,4 @@
 #! /usr/bin/env bash
+PYTHONPATH="src/edeposit/amqp$PYTHONPATH"
 
-PYTHONPATH="$PYTHONPATH:src/edeposit/amqp"
-TEST_PATH="tests"
-
-py.test "$TEST_PATH"
+py.test tests $@
