@@ -106,12 +106,10 @@ def _add_order(inp_dict):
         "itemlist",
         "checksum"
     ]
-    priority_table = dict(  # construct dict keys -> {key: order}
-        map(
-            lambda (cnt, key): (key, cnt),
-            enumerate(priority_table)
-        )
-    )
+    priority_table = {
+        key: cnt
+        for cnt, key in enumerate(priority_table)
+    }
 
     sorted_keys = sorted(
         inp_dict.keys(),
