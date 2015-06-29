@@ -11,6 +11,7 @@ import hashlib
 from collections import OrderedDict
 
 import xmltodict
+from odictliteral import odict
 from remove_hairs import remove_hairs
 from edeposit.amqp.aleph import marcxml
 
@@ -78,56 +79,13 @@ def _get_localized_fn(path, root_dir):
     return local_fn
 
 
-def _add_order(inp_dict):
-    """
-    Add order to unordered dict.
-
-    Order is taken from *priority table*, which is just something I did to
-    make outputs from `xmltodict` look like examples in specification.
-
-    Args:
-        inp_dict (dict): Unordered dictionary.
-
-    Returns:
-        OrderedDict: Dictionary ordered by *priority table*.
-    """
-    out = OrderedDict()
-
-    priority_table = [
-        "created",
-        "metadataversion",
-        "packageid",
-        "mainmets",
-        "titleid",
-        "collection",
-        "institution",
-        "creator",
-        "size",
-        "itemlist",
-        "checksum"
-    ]
-    priority_table = {
-        key: cnt
-        for cnt, key in enumerate(priority_table)
-    }
-
-    sorted_keys = sorted(
-        inp_dict.keys(),
-        key=lambda x: priority_table.get(x, x)
-    )
-    for key in sorted_keys:
-        out[key] = inp_dict[key]
-
-    return out
-
-
 def compose_info(root_dir, files, hash_fn, aleph_record):
     """
     Compose `info` XML file.
 
     Info example::
 
-        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
         <info>
             <created>2014-07-31T10:58:53</created>
             <metadataversion>1.0</metadataversion>
@@ -161,34 +119,37 @@ def compose_info(root_dir, files, hash_fn, aleph_record):
         hash_file_md5 = hashlib.md5(f.read()).hexdigest()
 
     schema_location = "http://www.ndk.cz/standardy-digitalizace/info11.xsd"
-    document = {
-        "info": {
+    document = odict[
+        "info": odict[
             "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
             "@xsi:noNamespaceSchemaLocation": schema_location,
+
             "created": time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()),
             "metadataversion": "1.0",
             "packageid": _path_to_id(root_dir),
-            "mainmets": "",
 
             # not used in SIP
             # "mainmets": _get_localized_fn(metadata_fn, root_dir),
 
-            "itemlist": {
+            "titleid": None,
+            "collection": "edeposit",
+            "institution": None,
+            "creator": None,
+            "size": _calc_dir_size(root_dir) / 1024,  # size in kiB
+            "itemlist": odict[
                 "@itemtotal": "2",
                 "item": map(
                     lambda x: _get_localized_fn(x, root_dir),
                     files
                 )
-            },
-            "checksum": {
+            ],
+            "checksum": odict[
                 "@type": "MD5",
                 "@checksum": hash_file_md5,
                 "#text": _get_localized_fn(hash_fn, root_dir)
-            },
-            "collection": "edeposit",
-            "size": _calc_dir_size(root_dir) / 1024,  # size in kiB
-        }
-    }
+            ],
+        ]
+    ]
 
     # get informations from MARC record
     record = marcxml.MARCXMLRecord(aleph_record)
@@ -231,8 +192,14 @@ def compose_info(root_dir, files, hash_fn, aleph_record):
     #         "#text": issn
     #     })
 
-    document["info"] = _add_order(document["info"])
-    xml_document = xmltodict.unparse(document, pretty=True)
+    # remove unset options
+    unset_keys = [
+        key
+        for key in document["info"]
+        if key is None
+    ]
+    for key in unset_keys:
+        del document[key]
 
-    # return xml_document.replace("<?xml ", '<?xml standalone="yes" ')
+    xml_document = xmltodict.unparse(document, pretty=True)
     return xml_document.encode("utf-8")
