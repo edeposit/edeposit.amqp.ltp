@@ -7,17 +7,36 @@
 import shutil
 import os.path
 
-import dhtmlparser
+import pytest
+import xmltodict
 
 import ltp.ltp as ltp
 import ltp.info_composer as icp
 
 
 # Variables ===================================================================
-# Variables ===================================================================
 DIRNAME = os.path.dirname(__file__) + "/data/"
-OAI_FILENAME = DIRNAME + "oai_example.oai"
 HASH_FILE = DIRNAME + "hashfile.md5"
+
+
+# Fixtures ====================================================================
+@pytest.fixture
+def oai_file():
+    with open(os.path.join(DIRNAME, "oai_example.oai")) as f:
+        return f.read()
+
+
+@pytest.fixture
+def info_xml():
+    return icp.compose_info(
+        "/home/root_dir",
+        [
+            "/home/root_dir/data/ebook.epub",
+            "/home/root_dir/meta/meta.xml",
+        ],
+        HASH_FILE,
+        oai_file()
+    )
 
 
 # Tests =======================================================================
@@ -46,7 +65,9 @@ def test_path_to_id():
 
 
 def test_calc_dir_size():
-    root_dir, original_dir, metadata_dir = ltp._create_package_hierarchy("/tmp")
+    root_dir, original_dir, metadata_dir = ltp._create_package_hierarchy(
+        "/tmp"
+    )
 
     # create 3 files
     with open(os.path.join(root_dir, "root_file.txt"), "w") as f:
@@ -65,24 +86,13 @@ def test_calc_dir_size():
         shutil.rmtree(root_dir)
 
 
-def test_add_order():
-    unordered = {
-        "size": 1,
-        "created": 1,
-        "creator": 1,
-        "titleid": 1,
-        "itemlist": 1,
-        "collection": 1,
-        "checksum": 1,
-        "packageid": 1,
-        "institution": 1,
-        "metadataversion": 1,
-        "something_random": "yey"
-    }
+def test_order(info_xml):
+    xdom = xmltodict.parse(info_xml)
+    info = xdom["info"]
 
-    ordered = icp._add_order(unordered)
-
-    assert ordered.keys() == [
+    assert info.keys() == [
+        "@xmlns:xsi",
+        "@xsi:noNamespaceSchemaLocation",
         "created",
         "metadataversion",
         "packageid",
@@ -93,35 +103,26 @@ def test_add_order():
         "size",
         "itemlist",
         "checksum",
-        "something_random"
     ]
 
 
-def test_compose_info():
-    info_xml = icp.compose_info(
-        "/home/root_dir",
-        [
-            "/home/root_dir/data/ebook.epub",
-            "/home/root_dir/meta/meta.xml",
-        ],
-        HASH_FILE,
-        open(OAI_FILENAME).read()
-    )
+def test_compose_info(info_xml, oai_file):
+    xdom = xmltodict.parse(info_xml)
+    info = xdom["info"]
+    created = info["created"]
 
-    dom = dhtmlparser.parseString(info_xml.encode("utf-8"))
-
-    assert ":" in dom.find("created")[0].getContent()
-    assert "-" in dom.find("created")[0].getContent()
-    assert "T" in dom.find("created")[0].getContent()
-    assert len(dom.find("created")[0].getContent()) >= 19
-    assert dom.find("metadataversion")[0].getContent() == "1.0"
-    assert dom.find("packageid")[0].getContent() == "root_dir"
-    assert dom.find("titleid")[0].getContent() == "80-251-0225-4"
-    assert dom.find("titleid")[1].getContent() == "cnb001492461"
-    assert dom.find("collection")[0].getContent() == "edeposit"
-    assert dom.find("institution")[0].getContent() == "Computer Press"
-    assert dom.find("creator")[0].getContent() == "ABA001"
-    assert dom.find("size")[0].getContent() == "0"
-    assert dom.find("itemlist")[0].find("item")[0].getContent() == "/data/ebook.epub"
-    assert dom.find("checksum")[0].getContent().endswith("hashfile.md5")
-    assert dom.find("checksum")[0].params["checksum"] == "18c0864b36d60f6036bf8eeab5c1fe7d"
+    assert ":" in created
+    assert "-" in created
+    assert "T" in created
+    assert len(created) >= 19
+    assert info["metadataversion"] == "1.0"
+    assert info["packageid"] == "root_dir"
+    assert info["titleid"][0]["#text"] == "80-251-0225-4"
+    assert info["titleid"][1]["#text"] == "cnb001492461"
+    assert info["collection"] == "edeposit"
+    assert info["institution"] == "Computer Press"
+    assert info["creator"] == "ABA001"
+    assert info["size"] == "0"
+    assert info["itemlist"]["item"][0] == "/data/ebook.epub"
+    assert info["checksum"]["#text"].endswith("hashfile.md5")
+    assert info["checksum"]["@checksum"] == "18c0864b36d60f6036bf8eeab5c1fe7d"
