@@ -8,7 +8,6 @@ import os
 import time
 import os.path
 import hashlib
-from collections import OrderedDict
 
 import xmltodict
 from odictliteral import odict
