@@ -77,7 +77,7 @@ def reactToAMQPMessage(message, send_back):
         success = ["ok", "success"]
         success = sum(([x, x + "_"] for x in success), [])  # add _ to the end
 
-        return TrackingRequest(
+        return TrackingResponse(
             book_id=uuid,
             exported=status in success,
             error=status,
