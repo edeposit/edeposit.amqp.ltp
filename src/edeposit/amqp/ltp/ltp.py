@@ -19,24 +19,28 @@ from marcxml2mods import marcxml2mods
 
 
 # Functions & objects =========================================================
-def _get_package_name(prefix=settings.TEMP_DIR):
+def _get_package_name(book_id=None, prefix=settings.TEMP_DIR):
     """
     Return package path. Use uuid to generate package's directory name.
 
     Args:
-        prefix (str): Where the package will be stored. Default
-                      :attr:`settings.TEMP_DIR`.
+        book_id (str, default None): UUID of the book.
+        prefix (str, default settings.TEMP_DIR): Where the package will be
+               stored. Default :attr:`settings.TEMP_DIR`.
 
     Returns:
         str: Path to the root directory.
     """
+    if book_id is None:
+        book_id = str(uuid.uuid4())
+
     return os.path.join(
         prefix,
-        str(uuid.uuid4())
+        book_id
     )
 
 
-def _create_package_hierarchy(prefix=settings.TEMP_DIR):
+def _create_package_hierarchy(book_id=None, prefix=settings.TEMP_DIR):
     """
     Create hierarchy of directories, at it is required in specification.
 
@@ -48,8 +52,9 @@ def _create_package_hierarchy(prefix=settings.TEMP_DIR):
     `metadata_dir` is path to the directory with MODS metadata.
 
     Args:
-        prefix (str): Path to the directory where the `root_dir` will be
-                      stored.
+        book_id (str, default None): UUID of the book.
+        prefix (str, default settings.TEMP_DIR): Where the package will be
+               stored. Default :attr:`settings.TEMP_DIR`.
 
     Warning:
         If the `root_dir` exists, it is REMOVED!
@@ -57,7 +62,7 @@ def _create_package_hierarchy(prefix=settings.TEMP_DIR):
     Returns:
         list of str: root_dir, orig_dir, metadata_dir
     """
-    root_dir = _get_package_name(prefix)
+    root_dir = _get_package_name(book_id=book_id, prefix=prefix)
 
     if os.path.exists(root_dir):
         shutil.rmtree(root_dir)
@@ -80,16 +85,14 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
 
     Args:
         aleph_record (str): XML containing full aleph record.
-        book_id (int): More or less unique ID of the book.
+        book_id (str): UUID of the book.
         ebook_fn (str): Original filename of the ebook.
         b64_data (str): Ebook file encoded in base64 string.
 
     Returns:
         str: Name of the package's directory in ``/tmp``.
     """
-    root_dir, orig_dir, meta_dir = _create_package_hierarchy()
-
-    book_id = info_composer._path_to_id(root_dir)  # TODO: wtf?
+    root_dir, orig_dir, meta_dir = _create_package_hierarchy(book_id)
 
     # create original file
     original_fn = os.path.join(
