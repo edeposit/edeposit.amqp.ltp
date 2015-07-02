@@ -52,12 +52,36 @@ def reactToAMQPMessage(message, send_back):
             b64_data=message.b64_data
         )
 
-        out_dir = os.path.join(settings.EXPORT_DIR, tmp_folder)
+        # remove directory from export dir, if already there
+        out_dir = os.path.join(
+            settings.EXPORT_DIR,
+            os.path.dirname(tmp_folder)
+        )
         if os.path.exists(out_dir):
             shutil.rmtree(out_dir)
 
         shutil.move(tmp_folder, settings.EXPORT_DIR)
-        # return structures.ScanResult(message.filename, result)
+        return True
+    elif _instanceof(message, TrackingRequest):
+        uuid = message.book_uuid
+
+        status = [
+            item.replace(uuid, "").replace("/", "")
+            for item in os.listdir(settings.EXPORT_DIR)
+            if uuid in item
+        ]
+
+        if not status:
+            raise ValueError("UUID %s not found!" % uuid)
+
+        success = ["ok", "success"]
+        success = sum(([x, x + "_"] for x in success), [])  # add _ to the end
+
+        return TrackingRequest(
+            book_id=uuid,
+            exported=status in success,
+            error=status,
+        )
 
     raise ValueError(
         "Unknown type of request: '" + str(type(message)) + "'!"

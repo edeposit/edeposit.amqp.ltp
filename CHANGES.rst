@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.11.0
+------
+    - Rewritten info_composer.
+    - Rests fixed and significantly improved.
+    - Added tracking feature to AMQP connector.
+
 0.10.0
 ------
     - Fixed a lot of bugs.
