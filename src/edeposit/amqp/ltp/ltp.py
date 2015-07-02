@@ -19,7 +19,7 @@ from marcxml2mods import marcxml2mods
 
 
 # Functions & objects =========================================================
-def _get_package_name(book_id=None, prefix=settings.TEMP_DIR):
+def _get_package_name(prefix=settings.TEMP_DIR, book_id=None):
     """
     Return package path. Use uuid to generate package's directory name.
 
@@ -34,13 +34,10 @@ def _get_package_name(book_id=None, prefix=settings.TEMP_DIR):
     if book_id is None:
         book_id = str(uuid.uuid4())
 
-    return os.path.join(
-        prefix,
-        book_id
-    )
+    return os.path.join(prefix, book_id)
 
 
-def _create_package_hierarchy(book_id=None, prefix=settings.TEMP_DIR):
+def _create_package_hierarchy(prefix=settings.TEMP_DIR, book_id=None):
     """
     Create hierarchy of directories, at it is required in specification.
 
@@ -92,7 +89,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
     Returns:
         str: Name of the package's directory in ``/tmp``.
     """
-    root_dir, orig_dir, meta_dir = _create_package_hierarchy(book_id)
+    root_dir, orig_dir, meta_dir = _create_package_hierarchy(book_id=book_id)
 
     # create original file
     original_fn = os.path.join(

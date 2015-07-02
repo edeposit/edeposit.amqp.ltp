@@ -40,7 +40,7 @@ def test_create_ltp_package():
 
     package_path = ltp.create_ltp_package(
         aleph_record,
-        121213,
+        "121213",
         "somebook.epub",
         base64.b64encode(aleph_record)
     )
