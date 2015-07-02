@@ -15,7 +15,7 @@ import ltp.info_composer as icp
 
 
 # Variables ===================================================================
-DIRNAME = os.path.join(os.path.dirname(__file__), "/data/")
+DIRNAME = os.path.join(os.path.dirname(__file__), "data/")
 
 
 # Fixtures ====================================================================
