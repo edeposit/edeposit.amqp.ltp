@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.11.2
+------
+    - Fixed bug in packaging system.
+
 0.11.1
 ------
     - Fixed bug in import system.
