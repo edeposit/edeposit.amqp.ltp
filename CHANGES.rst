@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.11.1
+------
+    - Fixed bug in import system.
+
 0.11.0
 ------
     - Rewritten info_composer.

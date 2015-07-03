@@ -74,12 +74,14 @@ def reactToAMQPMessage(message, send_back):
         if not status:
             raise ValueError("UUID %s not found!" % uuid)
 
-        success = ["ok", "success"]
+        status = status[0]
+
+        success = ["ok", "success", "done"]
         success = sum(([x, x + "_"] for x in success), [])  # add _ to the end
 
         return TrackingResponse(
             book_id=uuid,
-            exported=status in success,
+            exported=status.lower() in success,
             error=status,
         )
 
