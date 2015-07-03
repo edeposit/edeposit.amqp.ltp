@@ -55,13 +55,15 @@ def reactToAMQPMessage(message, send_back):
         # remove directory from export dir, if already there
         out_dir = os.path.join(
             settings.EXPORT_DIR,
-            os.path.dirname(tmp_folder)
+            os.path.basename(tmp_folder)
         )
+
         if os.path.exists(out_dir):
             shutil.rmtree(out_dir)
 
-        shutil.move(tmp_folder, settings.EXPORT_DIR)
+        shutil.move(tmp_folder, out_dir)
         return True
+
     elif _instanceof(message, TrackingRequest):
         uuid = message.book_uuid
 

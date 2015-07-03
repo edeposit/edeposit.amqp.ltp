@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.11.3
+------
+    - Attempt to fix the directory copying problem.
+
 0.11.2
 ------
     - Fixed bug in packaging system.
