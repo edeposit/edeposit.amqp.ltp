@@ -12,7 +12,7 @@ import hashlib
 import xmltodict
 from odictliteral import odict
 from remove_hairs import remove_hairs
-from edeposit.amqp.aleph import marcxml
+from marcxml_parser import MARCXMLRecord
 
 
 # Functions & classes =========================================================
@@ -151,11 +151,11 @@ def compose_info(root_dir, files, hash_fn, aleph_record):
     ]
 
     # get informations from MARC record
-    record = marcxml.MARCXMLRecord(aleph_record)
+    record = MARCXMLRecord(aleph_record)
 
     # get publisher info
-    publisher = unicode(record.getPublisher(), "utf-8")
-    if record.getPublisher(None):
+    publisher = unicode(record.get_publisher(), "utf-8")
+    if record.get_publisher(None):
         document["info"]["institution"] = remove_hairs(publisher)
 
     # get <creator> info
@@ -164,7 +164,7 @@ def compose_info(root_dir, files, hash_fn, aleph_record):
     document["info"]["creator"] = creator[0] if creator else alt_creator[-1]
 
     # collect informations for <titleid> tags
-    isbns = record.getISBNs()
+    isbns = record.get_ISBNs()
 
     ccnb = record.getDataRecords("015", "a", False)
     ccnb = ccnb[0] if ccnb else None
