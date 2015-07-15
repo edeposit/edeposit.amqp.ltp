@@ -10,6 +10,7 @@ from collections import namedtuple
 # Functions & classes =========================================================
 class ExportRequest(namedtuple("ExportRequest", ["aleph_record",
                                                  "book_uuid",
+                                                 "urn_nbn",
                                                  "filename",
                                                  "b64_data"])):
     """
@@ -19,6 +20,7 @@ class ExportRequest(namedtuple("ExportRequest", ["aleph_record",
         aleph_record (str): String with complete MARC XML / OAI MARC record.
         book_uuid (str): Unique ID of the book. This have to be in UUID4
                          format!
+        urn_nbn (str): URN:NBN for the book.
         filename (str): Original filename name of the epublication.
         b64_data (str): Epublication serialized as BASE64 data string.
     """
