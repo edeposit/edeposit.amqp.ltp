@@ -1,3 +1,12 @@
-include CONTRIBUTORS.rst CHANGES.rst README.rst LICENSE.txt requirements.txt
-recursive-exclude src/edeposit/amqp/ltp/tests *
-recursive-include html_docs *
+include README.rst
+include CHANGES.rst
+include CONTRIBUTORS.rst
+include LICENSE.txt
+include requirements.txt
+
+recursive-include tests *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
+recursive-include docs *.rst *.py Makefile make.bat
+recursive-exclude docs/_build *
