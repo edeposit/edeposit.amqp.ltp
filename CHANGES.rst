@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0.0
+-----
+    - URN:NBN incorporated into info file.
+    - Some refactorings.
+    - This version should successfully export package into to output directory and also trace the state changes.
+
 0.11.3
 ------
     - Attempt to fix the directory copying problem.

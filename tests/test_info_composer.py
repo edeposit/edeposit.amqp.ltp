@@ -28,13 +28,14 @@ def oai_file():
 @pytest.fixture
 def info_xml():
     return icp.compose_info(
-        "/home/root_dir",
-        [
+        root_dir="/home/root_dir",
+        files=[
             "/home/root_dir/data/ebook.epub",
             "/home/root_dir/meta/meta.xml",
         ],
-        os.path.join(DIRNAME, "hashfile.md5"),
-        oai_file()
+        hash_fn=os.path.join(DIRNAME, "hashfile.md5"),
+        aleph_record=oai_file(),
+        urn_nbn="urn:nbn:azgabash"
     )
 
 
@@ -118,6 +119,7 @@ def test_compose_info(info_xml, oai_file):
     assert info["packageid"] == "root_dir"
     assert info["titleid"][0]["#text"] == "80-251-0225-4"
     assert info["titleid"][1]["#text"] == "cnb001492461"
+    assert info["titleid"][2]["#text"] == "urn:nbn:azgabash"
     assert info["collection"] == "edeposit"
     assert info["institution"] == "Computer Press"
     assert info["creator"] == "ABA001"
