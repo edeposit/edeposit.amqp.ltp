@@ -78,7 +78,7 @@ def _get_localized_fn(path, root_dir):
     return local_fn
 
 
-def compose_info(root_dir, files, hash_fn, aleph_record):
+def compose_info(root_dir, files, hash_fn, aleph_record, urn_nbn=None):
     """
     Compose `info` XML file.
 
@@ -169,7 +169,7 @@ def compose_info(root_dir, files, hash_fn, aleph_record):
     ccnb = record.getDataRecords("015", "a", False)
     ccnb = ccnb[0] if ccnb else None
 
-    if any([isbns, ccnb]):  # TODO: issn
+    if any([isbns, ccnb, urn_nbn]):  # TODO: issn
         document["info"]["titleid"] = []
 
     for isbn in isbns:
@@ -182,6 +182,12 @@ def compose_info(root_dir, files, hash_fn, aleph_record):
         document["info"]["titleid"].append({
             "@type": "ccnb",
             "#text": ccnb
+        })
+
+    if urn_nbn:
+        document["info"]["titleid"].append({
+            "@type": "urnnbn",
+            "#text": urn_nbn
         })
 
     # TODO: later
