@@ -57,7 +57,7 @@ def reactToAMQPMessage(message, send_back):
         # remove directory from export dir, if already there
         out_dir = os.path.join(
             settings.EXPORT_DIR,
-            os.path.basename(tmp_folder)
+            os.path.basename(message.book_uuid)
         )
 
         if os.path.exists(out_dir):
