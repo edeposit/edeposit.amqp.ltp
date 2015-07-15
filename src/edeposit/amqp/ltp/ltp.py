@@ -75,7 +75,7 @@ def _create_package_hierarchy(prefix=settings.TEMP_DIR, book_id=None):
     return root_dir, original_dir, metadata_dir
 
 
-def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
+def create_ltp_package(aleph_record, book_id, ebook_fn, data, urn_nbn=None):
     """
     Create LTP package as it is specified in specification v1.0 as I understand
     it.
@@ -84,7 +84,8 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
         aleph_record (str): XML containing full aleph record.
         book_id (str): UUID of the book.
         ebook_fn (str): Original filename of the ebook.
-        b64_data (str): Ebook file encoded in base64 string.
+        data (str/bytes): Ebook's content.
+        urn_nbn (str, default None): URN:NBN.
 
     Returns:
         str: Name of the package's directory in ``/tmp``.
@@ -97,9 +98,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
         fn_composers.original_fn(book_id, ebook_fn)
     )
     with open(original_fn, "wb") as f:
-        f.write(
-            base64.b64decode(b64_data)
-        )
+        f.write(data)
 
     # create metadata files
     metadata_filenames = []
@@ -130,6 +129,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, b64_data):
                 files=[original_fn] + metadata_filenames,
                 hash_fn=md5_fn,
                 aleph_record=aleph_record,
+                urn_nbn=urn_nbn,
             )
         )
 

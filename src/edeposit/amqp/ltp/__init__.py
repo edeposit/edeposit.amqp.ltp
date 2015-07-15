@@ -4,6 +4,7 @@
 # Interpreter version: python 2.7
 #
 # Imports =====================================================================
+import base64
 import shutil
 import os.path
 
@@ -48,8 +49,9 @@ def reactToAMQPMessage(message, send_back):
         tmp_folder = ltp.create_ltp_package(
             aleph_record=message.aleph_record,
             book_id=message.book_uuid,
+            urn_nbn=message.urn_nbn,
             ebook_fn=message.filename,
-            b64_data=message.b64_data
+            data=base64.b64decode(message.b64_data)
         )
 
         # remove directory from export dir, if already there
