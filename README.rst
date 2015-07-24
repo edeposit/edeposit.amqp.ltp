@@ -36,11 +36,11 @@ Prepare system ::
 
 - add user `ltp` and `edeposit` into group `edep`
 
-install package::
+- install package::
 
    edeposit-aplikace:~ # pip install -U edeposit.amqp                                                              
    
-create necessary directories::
+- create necessary directories::
 
    edeposit-aplikace:~ # mkdir /home/ltp
    edeposit-aplikace:~ # chown ltp:edep /home/ltp/ -R
@@ -48,6 +48,8 @@ create necessary directories::
    edeposit-aplikace:~ # sudo su - ltp
    ltp@edeposit-aplikace:~> mkdir edep2ltp
    ltp@edeposit-aplikace:~> mkdir ltp2edep
+
+- add them proper permissions::
 
    ltp@edeposit-aplikace:~> chgrp edep edep2ltp/
    ltp@edeposit-aplikace:~> chgrp edep ltp2edep/
