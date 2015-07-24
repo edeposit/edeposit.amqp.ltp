@@ -33,3 +33,30 @@ Prepare system ::
 
    edeposit-aplikace:~ # groupadd edep
    edeposit-aplikace:~ # useradd ltp
+
+- add user `ltp` and `edeposit` into group `edep`
+
+install package::
+
+   edeposit-aplikace:~ # pip install -U edeposit.amqp                                                              
+   
+create necessary directories::
+
+   edeposit-aplikace:~ # mkdir /home/ltp
+   edeposit-aplikace:~ # chown ltp:edep /home/ltp/ -R
+   
+   edeposit-aplikace:~ # sudo su - ltp
+   ltp@edeposit-aplikace:~> mkdir edep2ltp
+   ltp@edeposit-aplikace:~> mkdir ltp2edep
+
+   ltp@edeposit-aplikace:~> chgrp edep edep2ltp/
+   ltp@edeposit-aplikace:~> chgrp edep ltp2edep/
+   ltp@edeposit-aplikace:~> chmod 770 edep2ltp/ ltp2edep/
+
+   ltp@edeposit-aplikace:~> ls -al
+   total 16
+   drwxr-xr-x 4 ltp  edep 4096 Jul 24 15:48 .
+   drwxr-xr-x 6 root root 4096 Jul 24 15:40 ..
+   drwxrwx--- 2 ltp  edep 4096 Jul 24 15:48 edep2ltp
+   drwxrwx--- 2 ltp  edep 4096 Jul 24 15:48 ltp2edep
+
