@@ -73,3 +73,10 @@ Prepare system ::
    drwxr-xr-x 2 ltp users 4096 Jul 24 16:13 .
    drwxr-xr-x 5 ltp edep  4096 Jul 24 16:05 ..
    -rw-r--r-- 1 ltp users  603 Jul 24 16:13 authorized_keys
+
+Run application
+----------------
+
+Run it as `ltp` user::
+
+   ltp@edeposit-aplikace:~> edeposit_amqp_ltpd.py start --foreground
