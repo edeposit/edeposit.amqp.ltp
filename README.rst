@@ -25,3 +25,11 @@ Documentation
 Full module documentation and description can be found at Read the Docs:
 
 - http://edeposit-amqp-ltp.readthedocs.org/
+
+Installation
+------------
+
+Prepare system ::
+
+   edeposit-aplikace:~ # groupadd edep
+   edeposit-aplikace:~ # useradd ltp
