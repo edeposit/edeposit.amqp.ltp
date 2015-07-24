@@ -34,7 +34,7 @@ Prepare system ::
    edeposit-aplikace:~ # groupadd edep
    edeposit-aplikace:~ # useradd ltp
 
-- add user `ltp` and `edeposit` into group `edep`
+- add user ``ltp`` and ``edeposit`` into group ``edep``
 
 - install package::
 
@@ -77,6 +77,6 @@ Prepare system ::
 Run application
 ----------------
 
-Run it as `ltp` user::
+Run it as ``ltp`` user::
 
    ltp@edeposit-aplikace:~> edeposit_amqp_ltpd.py start --foreground
