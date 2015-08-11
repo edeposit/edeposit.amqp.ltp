@@ -97,4 +97,5 @@ def info_fn(book_id):
     Returns:
         str: Filename in format ``info_BOOKID.xml``.
     """
-    return "info_%s.xml" % str(book_id)
+    # return "info_%s.xml" % str(book_id)
+    return "info.xml"
