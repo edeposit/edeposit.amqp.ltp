@@ -115,10 +115,11 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, data, urn_nbn=None):
         metadata_filenames.append(fn)
 
     # collect md5 sums
-    md5_fn = os.path.join(root_dir, fn_composers.checksum_fn(book_id))
-    checksums = checksum_generator.generate_hashfile(root_dir)
-    with open(md5_fn, "w") as f:
-        f.write(checksums)
+    # TODO: enable, when the project will be ready
+    # md5_fn = os.path.join(root_dir, fn_composers.checksum_fn(book_id))
+    # checksums = checksum_generator.generate_hashfile(root_dir)
+    # with open(md5_fn, "w") as f:
+    #     f.write(checksums)
 
     # create info file
     info_fn = os.path.join(root_dir, fn_composers.info_fn(book_id))
