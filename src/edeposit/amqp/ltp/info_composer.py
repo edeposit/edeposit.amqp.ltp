@@ -113,9 +113,10 @@ def compose_info(root_dir, files, hash_fn, aleph_record, urn_nbn=None):
     Returns:
         str: XML string.
     """
-    # compute hash for hashfile
-    with open(hash_fn) as f:
-        hash_file_md5 = hashlib.md5(f.read()).hexdigest()
+    # TODO: uncomment when the LTP will be ready
+    # # compute hash for hashfile
+    # with open(hash_fn) as f:
+    #     hash_file_md5 = hashlib.md5(f.read()).hexdigest()
 
     schema_location = "http://www.ndk.cz/standardy-digitalizace/info11.xsd"
     document = odict[
@@ -142,11 +143,11 @@ def compose_info(root_dir, files, hash_fn, aleph_record, urn_nbn=None):
                     files
                 )
             ],
-            "checksum": odict[
-                "@type": "MD5",
-                "@checksum": hash_file_md5,
-                "#text": _get_localized_fn(hash_fn, root_dir)
-            ],
+            # "checksum": odict[  # TODO: uncomment when the LTP will be ready
+            #     "@type": "MD5",
+            #     "@checksum": hash_file_md5,
+            #     "#text": _get_localized_fn(hash_fn, root_dir)
+            # ],
         ]
     ]
 
