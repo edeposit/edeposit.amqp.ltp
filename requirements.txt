@@ -1,5 +1,5 @@
 lxml
-marcxml2mods
+marcxml2mods>=0.2.4
 odictliteral
 remove_hairs
 marcxml_parser
