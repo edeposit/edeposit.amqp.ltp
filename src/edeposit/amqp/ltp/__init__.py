@@ -51,6 +51,7 @@ def reactToAMQPMessage(message, send_back):
             book_id=message.book_uuid,
             urn_nbn=message.urn_nbn,
             ebook_fn=message.filename,
+            url=message.url,
             data=base64.b64decode(message.b64_data)
         )
 

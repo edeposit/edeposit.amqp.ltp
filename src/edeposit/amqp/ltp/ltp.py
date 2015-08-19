@@ -75,7 +75,8 @@ def _create_package_hierarchy(prefix=settings.TEMP_DIR, book_id=None):
     return root_dir, original_dir, metadata_dir
 
 
-def create_ltp_package(aleph_record, book_id, ebook_fn, data, urn_nbn=None):
+def create_ltp_package(aleph_record, book_id, ebook_fn, data, url,
+                       urn_nbn=None):
     """
     Create LTP package as it is specified in specification v1.0 as I understand
     it.
@@ -85,6 +86,8 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, data, urn_nbn=None):
         book_id (str): UUID of the book.
         ebook_fn (str): Original filename of the ebook.
         data (str/bytes): Ebook's content.
+        url (str): URL of the publication used when the URL can't be found in
+                   `aleph_record`.
         urn_nbn (str, default None): URN:NBN.
 
     Returns:
@@ -102,7 +105,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, data, urn_nbn=None):
 
     # create metadata files
     metadata_filenames = []
-    records = marcxml2mods(aleph_record, book_id)
+    records = marcxml2mods(marc_xml=aleph_record, uuid=book_id, url=url)
     for cnt, mods_record in enumerate(records):
         fn = os.path.join(
             meta_dir,
@@ -128,7 +131,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, data, urn_nbn=None):
             info_composer.compose_info(
                 root_dir=root_dir,
                 files=[original_fn] + metadata_filenames,
-                hash_fn=md5_fn,
+                hash_fn="",  # TODO: md5_fn,
                 aleph_record=aleph_record,
                 urn_nbn=urn_nbn,
             )

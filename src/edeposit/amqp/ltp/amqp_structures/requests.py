@@ -11,6 +11,7 @@ from collections import namedtuple
 class ExportRequest(namedtuple("ExportRequest", ["aleph_record",
                                                  "book_uuid",
                                                  "urn_nbn",
+                                                 "url",
                                                  "filename",
                                                  "b64_data"])):
     """
@@ -21,6 +22,8 @@ class ExportRequest(namedtuple("ExportRequest", ["aleph_record",
         book_uuid (str): Unique ID of the book. This have to be in UUID4
                          format!
         urn_nbn (str): URN:NBN for the book.
+        url (str): URL of the publication, which is used if the URL can't be
+                   found in MARC XML.
         filename (str): Original filename name of the epublication.
         b64_data (str): Epublication serialized as BASE64 data string.
     """
