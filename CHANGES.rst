@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0.2
+-----
+    - Bugfixes based on feedback.
+    - Temporary disabled some of tests and functionality (UUID in info name, checksums), because LTP subsystem is broken on their side.
+
 1.0.1
 -----
     - Bugfix of MANIFEST.in.
