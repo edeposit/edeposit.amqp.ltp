@@ -118,11 +118,10 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, data, url,
         metadata_filenames.append(fn)
 
     # collect md5 sums
-    # TODO: enable, when the project will be ready
-    # md5_fn = os.path.join(root_dir, fn_composers.checksum_fn(book_id))
-    # checksums = checksum_generator.generate_hashfile(root_dir)
-    # with open(md5_fn, "w") as f:
-    #     f.write(checksums)
+    md5_fn = os.path.join(root_dir, fn_composers.checksum_fn(book_id))
+    checksums = checksum_generator.generate_hashfile(root_dir)
+    with open(md5_fn, "w") as f:
+        f.write(checksums)
 
     # create info file
     info_fn = os.path.join(root_dir, fn_composers.info_fn(book_id))
@@ -131,7 +130,7 @@ def create_ltp_package(aleph_record, book_id, ebook_fn, data, url,
             info_composer.compose_info(
                 root_dir=root_dir,
                 files=[original_fn] + metadata_filenames,
-                hash_fn="",  # TODO: md5_fn,
+                hash_fn=md5_fn,
                 aleph_record=aleph_record,
                 urn_nbn=urn_nbn,
             )

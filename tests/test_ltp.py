@@ -55,11 +55,11 @@ def test_create_ltp_package():
             fn_composers.info_fn(pid)
         )
     )
-    # assert os.path.exists(  # TODO: odkomentovat jakmile bude opraveno
-    #     os.path.join(
-    #         package_path,
-    #         fn_composers.checksum_fn(pid)
-    #     )
-    # )
+    assert os.path.exists(
+        os.path.join(
+            package_path,
+            fn_composers.checksum_fn(pid)
+        )
+    )
 
     shutil.rmtree(package_path)

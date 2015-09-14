@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.3
+-----
+    - Temporary disabled features and tests allowed.
+
 1.0.2
 -----
     - Bugfixes based on feedback.
