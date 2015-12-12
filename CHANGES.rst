@@ -3,7 +3,7 @@ Changelog
 
 1.0.3
 -----
-    - Temporary disabled features and tests allowed.
+    - Temporarily disabled features and tests allowed again.
 
 1.0.2
 -----
