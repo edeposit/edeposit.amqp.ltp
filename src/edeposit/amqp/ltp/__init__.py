@@ -64,7 +64,7 @@ def reactToAMQPMessage(message, send_back):
         if os.path.exists(out_dir):
             shutil.rmtree(out_dir)
 
-        shutil.move(tmp_folder, out_dir)
+        shutil.move(tmp_folder, settings.EXPORT_PREFIX + out_dir)
         return True
 
     elif _instanceof(message, TrackingRequest):

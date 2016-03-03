@@ -39,6 +39,9 @@ EXPORT_DIR = "/home/ltp/edep2ltp"
 #: Path to the directory for LTP import.
 IMPORT_DIR = "/home/ltp/ltp2edep"
 
+#: Prefix to the export directory.
+EXPORT_PREFIX = "complete_"
+
 
 # User configuration reader (don't edit this) =================================
 _ALLOWED = [str, unicode, int, float, long, bool]  #: Allowed types.

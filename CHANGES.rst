@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.4
+-----
+    - Added ``complete_`` prefix to export directory.
+
 1.0.3
 -----
     - Temporarily disabled features and tests allowed again.
